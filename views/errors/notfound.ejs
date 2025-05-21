@@ -1,0 +1,17 @@
+<%# html %><%# body %><%# div#wrapper%><%# main %>
+                <div id="error">
+                    <h1>
+                        <span>Error <%- title %></span>
+                        <%- message %>
+                        <br>
+                        <code><%- path %></code>
+                    </h1>
+                    <p>Contact the site administrator if you believe there should be a page here.<br>You can vent your frustrations on this drawing pad:</p>
+                    <div>
+                        <canvas id="canvas2"></canvas>
+                        <canvas id="canvas">
+                            <p>Oh, uh, it looks your browser does nor support our sketch pad...<br>You will need to use a physical one. Sorry :(</p>
+                        </canvas>
+                    </div>
+                    <script src="/js/notfound.js"></script>
+                </div>
