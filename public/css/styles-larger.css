@@ -194,6 +194,7 @@ section:where(#upgrades, #reviews) ul {
 
 #inventory-details div:first-of-type {
     border-radius: 1em 0 0 1em;
+    z-index: 1;
 }
 
 #inventory-details div:last-of-type {
