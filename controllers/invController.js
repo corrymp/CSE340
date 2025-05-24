@@ -27,7 +27,7 @@ invCont.buildByClassificationId = async function (req, res, next) {
     else {
         const classification = await invModel.getClassificationById(classification_id);
 
-        if(classification && classification[0]?.classification_name) title = `${classification[0].classification_name} vehicles`;
+        if (classification && classification[0]?.classification_name) title = `${classification[0].classification_name} vehicles`;
 
         else {
             res.redirect('/');
@@ -37,5 +37,29 @@ invCont.buildByClassificationId = async function (req, res, next) {
 
     res.render('./inventory/classification', { title, nav, grid, res });
 };
+
+/**
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @param {NextFunction} next - Express next callback
+ * @description build inventory item by ID view
+ */
+invCont.buildByVehicleId = async (req, res, next) => {
+    const vehicle_id = req.params.vehicleId;
+    const data = await invModel.getInventoryById(vehicle_id);
+    const pageData = await utilities.buildInventoryPage(data.rows[0]);
+    const title = pageData[0];
+    const page = pageData[1];
+    const nav = await utilities.getNav();
+    res.render('./inventory/detail', { title, nav, page });
+}
+
+/**
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @param {NextFunction} next - Express next callback
+ * @description cause an error
+ */
+invCont.ouch = async (req, res, next) => next(new Error('ouch'));
 
 module.exports = invCont;

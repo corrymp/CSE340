@@ -39,8 +39,17 @@ const getClassificationById = async (classification_id) => await pool.query(
     [classification_id]
 ).rows;
 
+const getInventoryById = async (inv_id) => await pool.query(
+    `SELECT *
+        FROM public.inventory
+        WHERE inv_id = $1    
+    `,
+    [inv_id]
+);
+
 module.exports = {
     getClassifications,
     getClassificationById,
-    getInventoryByClassificationId
+    getInventoryByClassificationId,
+    getInventoryById
 };

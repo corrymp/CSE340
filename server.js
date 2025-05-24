@@ -27,8 +27,8 @@ app.set('layout', './layouts/layout');
 
 app.use(staticContent);
 app.get(['/', '/home'], utilities.handleErrors(baseController.buildHome));
-app.use('/inv', inventoryRoute);
-app.use(async (req, res, next) => next({ status: 404, message: 'Sorry, we appear to have lost that page.' }));
+app.use('/inv', utilities.handleErrors(inventoryRoute));
+app.use(async (req, res, next) => next({ status: 404, message: `Uh, idk where that page went, but it isn't here` }));
 
 // express error handler **must be last middleware**
 app.use(async (err, req, res, next) => {
@@ -37,18 +37,18 @@ app.use(async (err, req, res, next) => {
     let dest = 'error';
 
     const destData = {
-        title: err.status || 'Server Error',
-        message: 'Oh no! There was a crash. Maybe try a different route?',
+        title: err.status || 'Internal Server Error',
+        message: 'Ouch, something broke over here... Try a different route?',
         nav: await utilities.getNav()
     }
 
-    if(err.status === 404) {
+    if (err.status === 404) {
         dest = 'notfound';
         destData.message = err.message;
         destData.path = req._parsedUrl.href;
     }
 
-    res.render(`errors/${dest}`, destData);
+    res.status(err.status || 500).render(`errors/${dest}`, destData);
 });
 //#endregion
 

@@ -28,25 +28,34 @@ const draw = () => {
     requestAnimationFrame(draw);
 }
 
-canvas.addEventListener('mousedown', _ => {
+const down = _ => {
     if(moving) ctx2.beginPath();
     pressed = true;
-});
+}
 
-canvas.addEventListener('mouseup', _ => {
+const up = _ => {
     ctx2.stroke();
     pressed = false;
-});
+}
 
-document.addEventListener('mousemove', e => {
+const move = e => {
+    e.preventDefault();
+
     curX = e.clientX - rect.left;
     curY = e.clientY - rect.top;
     moving = true;
+
     if(e.target !== canvas && e.target !== canvas2) {
         moving = false;
         pressed = false;
         ctx2.stroke();
     }
-});
+}
+
+const addEvents = (el, events, callback) => events.forEach(event => el.addEventListener(event, callback));
+
+addEvents(canvas, ['mousedown', 'touchstart'], down);
+addEvents(canvas, ['mouseup', 'touchend'], up);
+addEvents(document, ['mousemove', 'touchmove'], move);
 
 draw();

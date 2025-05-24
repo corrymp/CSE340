@@ -2,11 +2,12 @@
                 <div id="error">
                     <h1>
                         <span>Error <%- title %></span>
-                        <%- message %>
                         <br>
                         <code><%- path %></code>
                     </h1>
-                    <p>Contact the site administrator if you believe there should be a page here.<br>You can vent your frustrations on this drawing pad:</p>
+                    <p><%- message %></p>
+                    <p>Contact the site administrator if you believe there should be a page here.</p>
+                    <p>You can vent your frustrations on this drawing pad:</p>
                     <div>
                         <canvas id="canvas2"></canvas>
                         <canvas id="canvas">

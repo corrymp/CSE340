@@ -140,18 +140,17 @@ nav {
 nav ul {
     align-items: center;
     display: flex;
-    gap: 0.7em;
     justify-content: space-between;
     list-style: none;
     margin-bottom: -0.125em;
-    padding: 0.125em 0.6em;
+    padding: 0.125em 0;
 }
 
 nav li {
     display: block;
     font-size: 0.9em;
     margin: 0;
-    padding: 1em 0.5em;
+    padding: 1em 0.125em;
 }
 
 nav a {
@@ -174,6 +173,10 @@ footer p {
     font-size: 0.9em;
     margin-left: 0.6em;
     word-spacing: 0.277777em;
+}
+
+footer a {
+    font-size: .8em;
 }
 
 /*#endregion footer*/
@@ -329,7 +332,7 @@ section:where(#reviews, #upgrades) h2 {
 }
 
 #error h1 {
-    display: inline-flex;
+    display: flex;
     flex-direction: column;
     font-size: 2em;
 }
@@ -420,17 +423,22 @@ section:where(#reviews, #upgrades) h2 {
 }
 
 #inv-display li {
-    aspect-ratio: 1/1.1;
     background-color: var(--white);
     border: 1px solid #1e1e1e1e;
     border-radius: .5em;
-    display: grid;
-    grid-template-columns: 170px;
-    grid-template-rows: 120px auto;
     text-align: center;
 }
 
-#inv-display a img {
+#inv-display a {
+    aspect-ratio: 1/1.1;
+    display: grid;
+    grid-template-columns: 170px;
+    grid-template-rows: 120px auto;
+    color: revert;
+    text-decoration: none;
+}
+
+#inv-display img {
     border-radius: .5em;
     max-height: 120px;
     width: 100%;
@@ -439,7 +447,6 @@ section:where(#reviews, #upgrades) h2 {
 .namePrice {
     display: flex;
     flex-direction: column;
-    justify-content: baseline;
     gap: .5em;
 }
 
@@ -449,9 +456,74 @@ section:where(#reviews, #upgrades) h2 {
     border-color: var(--medium-green);
 }
 
-.namePrice h2 a {
+.namePrice h2 {
     font-weight: bold;
-    color: revert;
+    text-decoration: underline;
+}
+
+.namePrice span {
+    color: var(--black);
 }
 
 /*#endregion classification*/
+
+/* #region details */
+#inventory-details {
+    grid-column: 1/-1;
+    grid-row: 1/-1;
+}
+
+#inventory-details h1 {
+    font-size: 1.75em;
+    margin: 0 .25em;
+}
+
+#inventory-details div {
+    background-color: var(--white);
+}
+
+#inventory-details div:first-of-type {
+    border-radius: 1em 1em 0 0;
+}
+
+#inventory-details div:last-of-type {
+    border-radius: 0 0 1em 1em;
+}
+
+#inventory-details img {
+    border-radius: 1em;
+    height: auto;
+    width: 100%;
+    max-width: 450px;
+}
+
+#inventory-details h2 {
+    border-bottom: .125em solid var(--dark-green);
+    font-weight: bold;
+    margin: 0;
+    padding: 0 1em;
+}
+
+#inventory-details p {
+    border-radius: .5em;
+    margin: .5em;
+    padding: .5em;
+}
+
+#inventory-details p:nth-of-type(odd) {
+    background-color: var(--off-white);
+    color: var(--off-black);
+}
+
+#inventory-details b {
+    font-weight: bold;
+}
+
+/* #endregion details */
+
+/* ups padding on nav lis when screen width is 345px+; nav overflows if this is used by default */
+@media screen and (min-width: 345px) {
+    nav li {
+        padding: 1em .5em;
+    }
+}
