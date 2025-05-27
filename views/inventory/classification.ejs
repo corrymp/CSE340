@@ -1,6 +1,6 @@
 <%# html %><%# body %><%# div#wrapper%><%# main %>
                 <section id="inventory-by-classification"><% if (title) {/* Redirect to home if there is no title */ %>
-                    <h1><%= title %></h1><% } %>
-                    <%# !NYI! messages() %>
+                    <h1><%- title %></h1><% } %>
+                    <%- messages() %>
                     <%- grid %>
                 </section>

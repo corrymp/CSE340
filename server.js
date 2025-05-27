@@ -2,13 +2,39 @@
 const express = require('express');
 const expressLayouts = require('express-ejs-layouts');
 const env = require('dotenv').config();
+const session = require('express-session');
+const pool = require('./database');
+const bodyParser = require('body-parser');
 const app = express();
 
 const staticContent = require('./routes/static');
 const baseController = require('./controllers/baseController');
+const accountRoute = require('./routes/accountRoute');
 const inventoryRoute = require('./routes/inventoryRoute');
 const utilities = require('./utilities/');
 //#endregion
+
+//#region middleware
+// session
+app.use(session({
+    store: new (require('connect-pg-simple')(session))({ createTableIfMissing: true, pool }),
+    secret: process.env.SESSION_SECRET,
+    resave: true,
+    saveUninitialized: true,
+    name: 'sessionId'
+}));
+
+// Express Messages
+app.use(require('connect-flash')());
+app.use((req, res, next) => {
+    res.locals.messages = require('express-messages')(req, res);
+    next();
+});
+
+// for forms
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+//#endregion middleware
 
 //#region layout
 app.set('view engine', 'ejs');
@@ -20,13 +46,15 @@ app.set('layout', './layouts/layout');
 /*
     ['/css', '/js', '/images']  => staticContent
     ['/', '/home']              => index
+    '/account'                  => accountRoute
     '/inv'                      => inventoryRoute
     '/*'                        => 404 notFound (sets status/msg)
     '/*'                        => Error page
 */
 
-app.use(staticContent);
+app.use(utilities.handleErrors(staticContent));
 app.get(['/', '/home'], utilities.handleErrors(baseController.buildHome));
+app.use('/account', utilities.handleErrors(accountRoute));
 app.use('/inv', utilities.handleErrors(inventoryRoute));
 app.use(async (req, res, next) => next({ status: 404, message: `Uh, idk where that page went, but it isn't here` }));
 

@@ -35,7 +35,7 @@ invCont.buildByClassificationId = async function (req, res, next) {
         }
     }
 
-    res.render('./inventory/classification', { title, nav, grid, res });
+    res.render('./inventory/classification', { title, nav, grid, res, errors: null });
 };
 
 /**
@@ -51,7 +51,7 @@ invCont.buildByVehicleId = async (req, res, next) => {
     const title = pageData[0];
     const page = pageData[1];
     const nav = await utilities.getNav();
-    res.render('./inventory/detail', { title, nav, page });
+    res.render('./inventory/detail', { title, nav, page, errors: null });
 }
 
 /**

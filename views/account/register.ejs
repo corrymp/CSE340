@@ -1,0 +1,35 @@
+<%# html %><%# body %><%# div#wrapper%><%# main %>
+                <section id="register" class="account-page">
+                    <h1><%- title %></h1>
+                    <%- messages() %><% if (errors) { %><ul class="notice"><% errors.array().forEach(error => { %>
+                        <li><%= error.msg %></li><% }) %>
+                    </ul><% } %>
+                    <form action="/account/register" method="post">
+                        <label for="account_firstname">First name</label>
+                        <input type="text" name="account_firstname" id="account_firstname" placeholder="Alex" required>
+
+                        <label for="account_lastname">Last name</label>
+                        <input type="text" name="account_lastname" id="account_lastname" placeholder="Smith" required>
+
+                        <label for="account_email">Email address</label>
+                        <input type="email" name="account_email" id="account_email" placeholder="you@email.com" required>
+
+                        <label for="account_password">Password</label>
+                        <span class="input">
+                            <input type="password" name="account_password" id="account_password" pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{12,}$" title="Passwords must be at least of 12 characters along with having the following: a number (0-9), an uppercase letter (A-Z), and a special character (such as & or #)" placeholder="Sw0rdf!sh" required>
+                            <button class="show-pw" type="button">Show</button>
+                        </span>
+                        <div class="pw-req">Passwords must be at least of 12 characters along with having the following:
+                            <ol>
+                                <li>a number (0-9)</li>
+                                <li>an uppercase letter (A-Z)</li>
+                                <li>a "special" character (such as & or #)</li>
+                            </ol>
+                        </div>
+
+                        <button type="submit">Create account</button>
+
+                        <p>Already have an account? <a href="login">Sign-in</a></p>
+                    </form>
+                    <script src="/js/showpw.js"></script>
+                </section>

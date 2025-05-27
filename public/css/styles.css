@@ -69,6 +69,21 @@ h2,
     font-family: 'Lora', serif;
 }
 
+.notice {
+    background-color: var(--bright-yellow);
+    color: var(--red);
+    list-style-type: none;
+    margin: .5em 0;
+    padding: .33em;
+    text-align: center;
+}
+
+input:not(:placeholder-shown):not(:focus-visible):invalid,
+.input:has(input:not(:placeholder-shown):not(:focus-visible):invalid) {
+    outline: 2px solid var(--red);
+    box-shadow: 0 0 0 3px #fff;
+}
+
 /*#endregion global*/
 
 /*#region wrapper*/
@@ -520,6 +535,151 @@ section:where(#reviews, #upgrades) h2 {
 }
 
 /* #endregion details */
+
+/* #region account */
+.account-page {
+    grid-column: 1/-1;
+    grid-row: 1/-1;
+}
+
+.account-page h1 {
+    font-size: 1.75em;
+    margin: 0 .25em;
+}
+
+.account-page form {
+    background-color: var(--dark-green);
+    border: 2px outset var(--light-green);
+    border-radius: .33em;
+    color: var(--off-white);
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    max-width: 400px;
+    padding: .5em;
+    width: 66%;
+}
+
+.account-page input,
+.account-page .input,
+.account-page button {
+    background-color: var(--off-white);
+    border-radius: .33em;
+    color: var(--off-black);
+    padding: .33em;
+}
+
+.account-page label,
+.account-page .label,
+.account-page button[type=submit] {
+    margin-top: 1em;
+    margin-bottom: .25em;
+    position: relative;
+}
+
+.account-page label:first-of-type {
+    margin-top: 0;
+}
+
+.account-page label::before {
+    color: var(--red);
+    content: '*';
+    display: inline-block;
+    text-shadow: 0 0 1px var(--bright-yellow);
+}
+
+.account-page button {
+    align-items: center;
+    border-radius: 999in;
+    display: flex;
+    justify-content: center;
+    margin: auto;
+    padding: .33em .66em;
+}
+
+.input {
+    border: 2px inset ButtonBorder;
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.input:has(input:focus-visible) {
+    outline: 1px auto;
+}
+
+/* specificity boost to override invalid styling */
+.input input:is(:not(:valid), :not(:invalid)):is(:not(:valid), :not(:invalid)) {
+    border: 0;
+    box-shadow: none;
+    flex: 1;
+    outline: 0;
+    padding: 0;
+    width: 80%;
+}
+
+button.show-pw {
+    background: none;
+    border: 0;
+    cursor: pointer;
+    display: inline;
+    font-size: .8em;
+    margin: 0;
+    opacity: .66;
+    padding: 0;
+}
+
+html .hover-reveal {
+    appearance: none;
+    aspect-ratio: 1;
+    background: none;
+    border: 1px solid var(--off-white);
+    border-radius: 999in;
+    cursor: pointer;
+    height: 1em;
+    margin: 0;
+    margin-left: .33em;
+    opacity: .6;
+    padding: 0;
+    position: absolute;
+    text-align: center;
+    width: 1em;
+}
+
+.hover-reveal::before {
+    content: 'i';
+    color: var(--off-white);
+}
+
+.hover-reveal:hover,
+.hover-reveal:checked {
+    opacity: 1;
+}
+
+.hover-show {
+    display: none;
+}
+
+form:has(.hover-reveal:hover, .hover-reveal:checked) .hover-show {
+    display: unset;
+}
+
+.pw-req {
+    margin-top: 1em;
+    font-size: .8em;
+}
+
+.pw-req li {
+    list-style-type: disc;
+    margin-left: .95em;
+}
+
+.account-page p {
+    margin-top: .66em;
+    text-align: center;
+}
+
+/* #endregion account */
 
 /* ups padding on nav lis when screen width is 345px+; nav overflows if this is used by default */
 @media screen and (min-width: 345px) {
