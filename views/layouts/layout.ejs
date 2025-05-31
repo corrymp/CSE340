@@ -2,6 +2,7 @@
 <html lang="en"><%- include('../partials/head') %>
     <body>
         <div id="wrapper"><%- include('../partials/header') %><%- include('../partials/nav') %>
+            <% if (!['Login','Register','Add Classification','Add Inventory','Inventory Management'].includes(title)) { %><%- messages() %><% } %>
             <main><%- body %>
             </main>
             <%- include('../partials/footer') %>

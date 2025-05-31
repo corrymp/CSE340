@@ -1,10 +1,12 @@
 <%# html %><%# body %><%# div#wrapper%><%# main %>
                 <section id="login" class="account-page">
                     <h1><%- title %></h1>
-                    <%- messages() %>
-                    <form action="/login" method="post">
+                    <%- messages() %><% if (errors) { %><ul class="notice"><% errors.array().forEach(error => { %>
+                        <li><%= error.msg %></li><% }) %>
+                    </ul><% } %>
+                    <form action="/account/login" method="post">
                         <label for="account_email">Email:</label>
-                        <input type="email" name="account_email" id="account_email" placeholder="you@email.com" required>
+                        <input type="email" name="account_email" id="account_email" placeholder="you@email.com" required value="<%= locals.account_email %>">
 
                         <span class="label"><label for="account_password">Password</label><input type="checkbox" class="hover-reveal" title="show password requirments"></span>
                         <span class="input">

@@ -6,13 +6,13 @@
                     </ul><% } %>
                     <form action="/account/register" method="post">
                         <label for="account_firstname">First name</label>
-                        <input type="text" name="account_firstname" id="account_firstname" placeholder="Alex" required>
+                        <input type="text" name="account_firstname" id="account_firstname" placeholder="Alex" required value="<%= locals.account_firstname %>">
 
                         <label for="account_lastname">Last name</label>
-                        <input type="text" name="account_lastname" id="account_lastname" placeholder="Smith" required>
+                        <input type="text" name="account_lastname" id="account_lastname" placeholder="Smith" required value="<%= locals.account_lastname %>">
 
                         <label for="account_email">Email address</label>
-                        <input type="email" name="account_email" id="account_email" placeholder="you@email.com" required>
+                        <input type="email" name="account_email" id="account_email" placeholder="you@email.com" required value="<%= locals.account_email %>">
 
                         <label for="account_password">Password</label>
                         <span class="input">

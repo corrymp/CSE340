@@ -11,22 +11,23 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "bcryptjs": "^3.0.2",
         "body-parser": "^2.2.0",
         "connect-flash": "^0.1.1",
         "connect-pg-simple": "^10.0.0",
-        "dotenv": "^16.0.3",
+        "dotenv": "^16.5.0",
         "ejs": "^3.1.10",
         "express": "^4.21.2",
         "express-ejs-layouts": "^2.5.1",
         "express-messages": "^1.0.1",
         "express-session": "^1.18.1",
         "express-validator": "^7.2.1",
-        "pg": "^8.8.0"
+        "pg": "^8.16.0"
     },
     "devDependencies": {
-        "eslint": "^8.56.0",
-        "eslint-plugin-import": "^2.29.1",
-        "nodemon": "^3.1.0"
+        "eslint": "^8.57.1",
+        "eslint-plugin-import": "^2.31.0",
+        "nodemon": "^3.1.10"
     },
     "packageManager": "pnpm@10.10.0+sha512.d615db246fe70f25dcfea6d8d73dee782ce23e2245e3c4f6f888249fb568149318637dca73c2c5c8ef2a4ca0d5657fb9567188bfab47f566d1ee6ce987815c39"
 }

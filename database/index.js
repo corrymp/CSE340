@@ -12,14 +12,15 @@ if (process.env.NODE_ENV === 'development') {
 
     // for troubleshooting queries during dev
     module.exports = {
-        async query(text, params) {
+        async query(text, params, verbose = false, showRes = false) {
             try {
                 const res = await pool.query(text, params);
-                console.log('executed query with params', { params }, { text });
+                if(verbose) console.log('executed query' + params ? 'with params' : '', params ? { params } : '', ':\n', { text }, showRes ? '\n' : '', showRes ? res : '');
                 return res;
             }
             catch (err) {
-                console.error('error in query', { text });
+                console.error('error in query' + params ? 'with params' : '', params ? { params } : '', ':\n', { text });
+                console.trace();
                 throw err;
             }
         }

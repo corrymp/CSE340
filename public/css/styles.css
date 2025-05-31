@@ -78,12 +78,6 @@ h2,
     text-align: center;
 }
 
-input:not(:placeholder-shown):not(:focus-visible):invalid,
-.input:has(input:not(:placeholder-shown):not(:focus-visible):invalid) {
-    outline: 2px solid var(--red);
-    box-shadow: 0 0 0 3px #fff;
-}
-
 /*#endregion global*/
 
 /*#region wrapper*/
@@ -155,7 +149,7 @@ nav {
 nav ul {
     align-items: center;
     display: flex;
-    justify-content: space-between;
+    flex-wrap: wrap;
     list-style: none;
     margin-bottom: -0.125em;
     padding: 0.125em 0;
@@ -179,19 +173,39 @@ nav a:where(:hover, :focus-visible) {
 
 /*#endregion nav*/
 
+/* #region main */
+
+h1 {
+    font-size: 1.75em;
+    margin: 0 .25em;
+}
+
+/* #endregion main */
+
 /*#region footer*/
+
 footer {
     margin-top: 0.33em;
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: baseline;
 }
 
 footer p {
     font-size: 0.9em;
     margin-left: 0.6em;
     word-spacing: 0.277777em;
+    display: inline-block;
 }
 
 footer a {
     font-size: .8em;
+}
+
+footer .modification-date {
+    font-size: 11px;
+    word-spacing: unset;
 }
 
 /*#endregion footer*/
@@ -338,8 +352,6 @@ section:where(#reviews, #upgrades) h2 {
     border: 1px solid;
     box-shadow: 0.33em 0.33em 0.66em var(--l-off-black), 0.33em 0.33em 0.66em 1px var(--l-off-white);
     color: var(--l-black);
-    grid-column: 1/-1;
-    grid-row: 1/-1;
     margin: 3em auto;
     padding: 0.25em 0.25em 0.66em;
     text-align: center;
@@ -418,15 +430,6 @@ section:where(#reviews, #upgrades) h2 {
 /*#endregion error*/
 
 /*#region classification*/
-#inventory-by-classification {
-    grid-column: 1/-1;
-    grid-row: 1/-1;
-}
-
-#inventory-by-classification h1 {
-    font-size: 1.75em;
-    margin: 0 .25em;
-}
 
 #inv-display {
     display: flex;
@@ -483,15 +486,6 @@ section:where(#reviews, #upgrades) h2 {
 /*#endregion classification*/
 
 /* #region details */
-#inventory-details {
-    grid-column: 1/-1;
-    grid-row: 1/-1;
-}
-
-#inventory-details h1 {
-    font-size: 1.75em;
-    margin: 0 .25em;
-}
 
 #inventory-details div {
     background-color: var(--white);
@@ -537,64 +531,11 @@ section:where(#reviews, #upgrades) h2 {
 /* #endregion details */
 
 /* #region account */
-.account-page {
-    grid-column: 1/-1;
-    grid-row: 1/-1;
-}
 
-.account-page h1 {
-    font-size: 1.75em;
-    margin: 0 .25em;
-}
-
-.account-page form {
-    background-color: var(--dark-green);
-    border: 2px outset var(--light-green);
-    border-radius: .33em;
-    color: var(--off-white);
-    display: flex;
-    flex-direction: column;
-    margin: 0 auto;
-    max-width: 400px;
-    padding: .5em;
-    width: 66%;
-}
-
-.account-page input,
-.account-page .input,
-.account-page button {
-    background-color: var(--off-white);
-    border-radius: .33em;
-    color: var(--off-black);
-    padding: .33em;
-}
-
-.account-page label,
-.account-page .label,
-.account-page button[type=submit] {
-    margin-top: 1em;
-    margin-bottom: .25em;
-    position: relative;
-}
-
-.account-page label:first-of-type {
-    margin-top: 0;
-}
-
-.account-page label::before {
-    color: var(--red);
-    content: '*';
-    display: inline-block;
-    text-shadow: 0 0 1px var(--bright-yellow);
-}
-
-.account-page button {
-    align-items: center;
-    border-radius: 999in;
-    display: flex;
-    justify-content: center;
-    margin: auto;
-    padding: .33em .66em;
+input:not(:placeholder-shown):not(:focus-visible):invalid,
+.input:has(input:not(:placeholder-shown):not(:focus-visible):invalid) {
+    outline: 2px solid var(--red);
+    box-shadow: 0 0 0 3px #fff;
 }
 
 .input {
@@ -680,6 +621,67 @@ form:has(.hover-reveal:hover, .hover-reveal:checked) .hover-show {
 }
 
 /* #endregion account */
+
+/* #region forms */
+
+form {
+    background-color: var(--dark-green);
+    border: 2px outset var(--light-green);
+    border-radius: .33em;
+    color: var(--off-white);
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    max-width: 400px;
+    padding: .5em;
+    width: 66%;
+}
+
+form input,
+form .input,
+form button,
+textarea,
+select,
+option {
+    background-color: var(--off-white);
+    border-radius: .33em;
+    color: var(--off-black);
+    padding: .33em;
+}
+
+.select-unused {
+    color: #1010108a
+}
+
+form label,
+form .label,
+form button[type=submit] {
+    margin-top: 1em;
+    margin-bottom: .25em;
+    position: relative;
+}
+
+form label:first-of-type {
+    margin-top: 0;
+}
+
+form label::before {
+    color: var(--red);
+    content: '*';
+    display: inline-block;
+    text-shadow: 0 0 1px var(--bright-yellow);
+}
+
+form button {
+    align-items: center;
+    border-radius: 999in;
+    display: flex;
+    justify-content: center;
+    margin: auto;
+    padding: .33em .66em;
+}
+
+/* #endregion forms */
 
 /* ups padding on nav lis when screen width is 345px+; nav overflows if this is used by default */
 @media screen and (min-width: 345px) {

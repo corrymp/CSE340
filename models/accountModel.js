@@ -1,4 +1,5 @@
 const pool = require('../database');
+const verbose = true;
 
 /**
  * @param {String} account_firstname - users first name
@@ -20,7 +21,8 @@ const registerAccount = async (account_firstname, account_lastname, account_emai
                 )
                 VALUES ( $1, $2, $3, $4 )
                 RETURNING *`,
-            [account_firstname, account_lastname, account_email, account_password]
+            [account_firstname, account_lastname, account_email, account_password],
+            verbose
         );
     }
     catch (e) {
@@ -28,4 +30,39 @@ const registerAccount = async (account_firstname, account_lastname, account_emai
     }
 };
 
-module.exports = { registerAccount };
+const checkExistingEmail = async account_email => {
+    try {
+        const email = await pool.query(
+            `SELECT * 
+                FROM account
+                WHERE account_email = $1`,
+            [account_email],
+            verbose
+        );
+        return email.rowCount;
+    }
+    catch (e) {
+        return error.message;
+    }
+}
+
+const checkAccount = async (account_email, account_password) => {
+    try {
+        const account = await pool.query(
+            `SELECT * 
+                FROM account
+                WHERE account_email = $1
+                AND account_password = $2`,
+            [account_email, account_password],
+            verbose
+        );
+
+        if(account.rows[0]) return account.rows[0];
+        return false;
+    }
+    catch (e) {
+        return error.message;
+    }
+}
+
+module.exports = { registerAccount, checkExistingEmail, checkAccount };

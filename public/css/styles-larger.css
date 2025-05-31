@@ -20,13 +20,6 @@ body {
     margin: 0.625em auto 0;
 }
 
-main {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
-    gap: 0.5em;
-}
-
 /* #endregion wrapper */
 
 /* #region header */
@@ -50,24 +43,38 @@ nav {
 }
 
 nav ul {
-    gap: 0;
+    justify-content: space-between;
     padding: 0.125em 2.3em;
 }
 
 nav li {
     padding: 0.5em 1em;
     text-align: center;
-    width: 100%;
 }
 
 /* #endregion nav */
+
+/* #region main */
+
+main:has(#hero) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 0.5em;
+}
+
+/* #endregion main */
 
 /* #region footer */
 footer {
     margin-top: 1em;
     padding-bottom: 0.5em;
+    flex-direction: row;
 }
 
+footer .modification-date{
+    transform: translate(-.33em, 1em);
+}
 /* #endregion footer */
 
 /* #region home */
@@ -219,5 +226,4 @@ section:where(#upgrades, #reviews) ul {
 #inventory-details b {
     font-size: 1.2em;
 }
-
 /* #endregion details */

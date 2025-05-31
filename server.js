@@ -61,14 +61,16 @@ app.use(async (req, res, next) => next({ status: 404, message: `Uh, idk where th
 // express error handler **must be last middleware**
 app.use(async (err, req, res, next) => {
     console.error(`Error at: "${req.originalUrl}": ${err.message}`);
+    console.trace();
 
     let dest = 'error';
 
     const destData = {
         title: err.status || 'Internal Server Error',
         message: 'Ouch, something broke over here... Try a different route?',
-        nav: await utilities.getNav()
-    }
+        nav: await utilities.getNav(),
+        lastModified: utilities.lastModified
+    };
 
     if (err.status === 404) {
         dest = 'notfound';

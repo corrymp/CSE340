@@ -1,12 +1,36 @@
 const express = require('express');
 const router = new express.Router();
 const accountController = require('../controllers/accountController');
-const regValidate = require('../utilities/account-validation');
+const accValidate = require('../utilities/account-validation');
 const utilities = require('../utilities');
+const uhe = utilities.handleErrors;
 
-// Route to build inventroy by classification view
-router.get('/login', utilities.handleErrors(accountController.buildLogin));
-router.get('/register', utilities.handleErrors(accountController.buildRegister));
-router.post('/register', regValidate.registrationRules(), regValidate.checkRegData, utilities.handleErrors(accountController.registerAccount));
+// Route to build login view
+router.get(
+    '/login', 
+    uhe(accountController.buildLogin)
+);
+
+// Route to build registration view
+router.get(
+    '/register', 
+    uhe(accountController.buildRegister)
+);
+
+// Route to register new account
+router.post(
+    '/register', 
+    accValidate.registrationRules(), 
+    uhe(accValidate.checkRegData), 
+    uhe(accountController.registerAccount)
+);
+
+// Route to login account
+router.post(
+    '/login', 
+    accValidate.loginRules(), 
+    uhe(accValidate.checkLoginData), 
+    uhe(accountController.loginAccount)
+);
 
 module.exports = router;

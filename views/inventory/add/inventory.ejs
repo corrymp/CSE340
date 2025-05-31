@@ -1,0 +1,41 @@
+<%# html %><%# body %><%# div#wrapper%><%# main %>
+                <section id="add-inv" class="inv-add-page">
+                    <h1><%- title %></h1>
+                    <%- messages() %><% if (errors) { %>
+                    <ul class="notice"><% errors.array().forEach(error=> { %>
+                        <li><%= error.msg %></li><% }) %>
+                    </ul><% } %>
+                    <form action="/inv/add/inventory" method="post">
+                        <label for="classification_id">Classification</label>
+                        <%- classification_opts %>
+                        
+                        <label for="inv_make">Make</label>
+                        <input type="text" name="inv_make" id="inv_make" placeholder="Honda" required value="<%= locals.inv_make %>" pattern="^[a-zA-z]{3,}$">
+
+                        <label for="inv_model">Model</label>
+                        <input type="text" name="inv_model" id="inv_model" placeholder="Odyssey" required value="<%= locals.inv_model %>" pattern="^[a-zA-z]{3,}$">
+
+                        <label for="inv_image">Image path</label>
+                        <input type="text" name="inv_image" id="inv_image" placeholder="/images/vehicles/no-image.png" required value="<%= locals.inv_image %>" pattern="^(?=(?:.*\/)).*\.(?i:apng|avif|gif|jpeg|png|svg|webp|bmp|ico|tiff)$">
+
+                        <label for="inv_thumbnail">Thumbnail path</label>
+                        <input type="text" name="inv_thumbnail" id="inv_thumbnail" placeholder="/images/vehicles/no-image.png" required value="<%= locals.inv_thumbnail %>" pattern="^(?=(?:.*\/)).*\.(?i:apng|avif|gif|jpeg|png|svg|webp|bmp|ico|tiff)$">
+
+                        <label for="inv_price">Price</label>
+                        <input type="number" name="inv_price" id="inv_price" placeholder="12000" required value="<%= locals.inv_price %>">
+
+                        <label for="inv_year">Year</label>
+                        <input type="number" name="inv_year" id="inv_year" placeholder="2002" required value="<%= locals.inv_year %>" min="1886" step="1" max="<%= new Date().getFullYear() + 1 %>">
+
+                        <label for="inv_miles">Miles</label>
+                        <input type="number" name="inv_miles" id="inv_miles" placeholder="25000" required value="<%= locals.inv_miles %>">
+
+                        <label for="inv_color">Color</label>
+                        <input type="text" name="inv_color" id="inv_color" placeholder="Gray" required value="<%= locals.inv_color %>">
+
+                        <label for="inv_description">Description</label>
+                        <textarea name="inv_description" id="inv_description" placeholder="Ol' faithful" required><%= locals.inv_description %></textarea>
+
+                        <button type="submit">Add Vehicle</button>
+                    </form>
+                </section>

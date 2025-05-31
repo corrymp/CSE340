@@ -6,9 +6,6 @@ const baseController = {};
  * @param {Response} res - Express response object
  * @description renders home page view
  */
-baseController.buildHome = async (req, res) => {
-    const nav = await utilities.getNav();
-    res.render('index', { title: 'Home', nav, errors: null });
-};
+baseController.buildHome = async (req, res) => res.render('index', { title: 'Home', nav: await utilities.getNav(), errors: null, lastModified: utilities.lastModified });
 
 module.exports = baseController;

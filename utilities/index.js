@@ -1,7 +1,17 @@
 const invModel = require('../models/inventory-model');
+const fs = require('fs');
 const Util = {};
 
 const numFormatEnUS = new Intl.NumberFormat('en-us');
+
+Util.lastModified = new Date(fs.statSync('./server.js').mtime).toLocaleString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    timeZoneName: 'shortGeneric'
+});
 
 /**
  * @param {Number} number - number to add commas to
@@ -27,20 +37,13 @@ Util.commaify = n => (i => (l => (d => `${l ? `${i.substring(0, l)},` : ''}${i.s
  * @returns {String} built page navigation
  * @description Constructs the nav HTML unordered list
  */
-Util.getNav = async (req, res, next) => {
-    const data = await invModel.getClassifications();
-
-    let list = `<ul>\n                    <li><a href="/" title="Home page">Home</a></li>`;
-
-    data.rows.forEach(row => list += `
-                    <li><a href="/inv/type/${row.classification_id}" title="See our inventory of ${row.classification_name} vehicles">${row.classification_name}</a></li>`
-    );
-
-    list += `\n                </ul>`;
-
-    return list;
-};
-
+Util.getNav = async (req, res, next) => (
+                `<ul>
+                    <li><a href="/" title="Home page">Home</a></li>${(await invModel.getClassifications()).rows.map(row => `
+                    <li><a href="/inv/type/${row.classification_id}" title="See our inventory of ${row.classification_name} vehicles">${row.classification_name}</a></li>`).join('')}
+                </ul>`
+);
+                 
 /**
  * @param {Object[]} invData - rows from SQL query containing vehicles by classification
  * @param {String} invData.inv_make - vehicle make
@@ -51,36 +54,30 @@ Util.getNav = async (req, res, next) => {
  * @returns {String} built HTML string of vehicles grid
  * @description build the classification view HTML
  */
-Util.buildClassificationGrid = async data => {
-    let grid;
+Util.buildClassificationGrid = async data => data.length > 0 
+    ? `<ul id="inv-display">${data.map(v => `
+                        <li><a href="../../inv/detail/${v.inv_id}" title="View ${v.inv_make} ${v.inv_model} details">
+                            <img src="${v.inv_thumbnail}" alt="${v.inv_make} ${v.inv_model} available on CSE Motors">
+                            <div class="namePrice">
+                                <hr>
+                                <h2>${v.inv_make} ${v.inv_model}</h2>
+                                <span>$${Util.commaify(v.inv_price)}</span>
+                            </div>
+                        </a></li>`).join('')}
+                    </ul>`
+    : '<p class="notice">Sorry, no matching vehicles could be found.</p>';
 
-    if (data.length > 0) {
-        grid = '<ul id="inv-display">';
-
-        data.forEach(vehicle => {
-            const makeModel = `${vehicle.inv_make} ${vehicle.inv_model}`;
-            const viewLinkData = `href="../../inv/detail/${vehicle.inv_id}" title="View ${makeModel} details"`;
-
-            grid += `
-                        <li>
-                            <a ${viewLinkData}>
-                                <img src="${vehicle.inv_thumbnail}" alt="${makeModel} available on CSE Motors">
-                                <div class="namePrice">
-                                    <hr>
-                                    <h2>${makeModel}</h2>
-                                    <span>$${Util.commaify(vehicle.inv_price)}</span>
-                                </div>
-                            </a>
-                        </li>`;
-        });
-
-        grid += `\n                    </ul>`;
-    }
-    else grid = '<p class="notice">Sorry, no matching vehicles could be found.</p>';
-
-    return grid;
-};
-
+/**
+ * @param {String?} classification_id - id of classification to pre-select
+ * @returns {String} build HTML string of "select" populated with "option"s
+ */
+Util.buildClassificationList = async classification_id => (
+                        `<select name="classification_id" id="classification_id" required>
+                            <option value="" class="select-unused">Classification...</option>${(await invModel.getClassifications()).rows.map(row => `
+                            <option ${classification_id === row.classification_id ? 'selected ' : ''}value="${row.classification_id}">${row.classification_name}</option>`).join('')}
+                        </select>`
+);
+      
 /**
  * @param {Object} invData - data to build page from
  * @param {String} invData.inv_year - vehicle year
@@ -95,10 +92,7 @@ Util.buildClassificationGrid = async data => {
  */
 Util.buildInventoryPage = async invData => [
     `${invData.inv_year} ${invData.inv_make} ${invData.inv_model}`,
-                   `<div>
-                        <img src="${invData.inv_image}" alt="${invData.inv_make} ${invData.inv_model} available on CSE Motors">
-                    </div>
-
+    `<div><img src="${invData.inv_image}" alt="${invData.inv_make} ${invData.inv_model} available on CSE Motors"></div>
                     <div>
                         <h2>${invData.inv_make} ${invData.inv_model} Details</h2>
                         <p><b>Price: $${Util.commaify(invData.inv_price)}</b></p>
