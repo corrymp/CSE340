@@ -30,7 +30,14 @@ router.post(
     '/login', 
     accValidate.loginRules(), 
     uhe(accValidate.checkLoginData), 
-    uhe(accountController.loginAccount)
+    uhe(accountController.accountLogin)
+);
+
+// Route 
+router.get(
+    '/',
+    utilities.checkLogin,
+    uhe(accountController.accountManagement)
 );
 
 module.exports = router;

@@ -6,6 +6,16 @@
                         <a href="/inv/add/classification" title="add a new inventory classification to the site">Add New Classification</a>
 
                         <a href="/inv/add/inventory" title="add a new vehicle to the site">Add New Vehicle</a>
-                    </form>
 
+                        <h2>Manage Inventory</h2>
+
+                        <p>Choose a classification to see the inventory of.</p>
+
+                        <%- classificationSelect %>
+
+                        <table id="inventoryDisplay"></table>
+
+                        <noscript>JavaScript must be enabled to use these features.</noscript>
+                        <script src="../../js/inventory.js"></script>
+                    </form>
                 </section>

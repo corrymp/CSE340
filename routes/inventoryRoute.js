@@ -5,31 +5,31 @@ const invValidate = require('../utilities/inv-validation');
 const utilities = require('../utilities');
 const uhe = utilities.handleErrors;
 
-// Route to build inventroy by classification view
+// view inventroy by classification route
 router.get(
     '/type/:classificationId', 
     uhe(invController.buildByClassificationId)
 );
 
-// Route to build inventroy item view
+// view inventroy item route
 router.get(
     '/detail/:vehicleId', 
     uhe(invController.buildByVehicleId)
 );
 
-// Route to build add classification view
+// add classification form route
 router.get(
     '/add/classification', 
     uhe(invController.buildAddClassification)
 );
 
-// Route to build add inventroy item view
+// add inventroy item form route
 router.get(
     '/add/inventory', 
     uhe(invController.buildAddInventory)
 );
 
-// Route to add new classification
+// add new classification submission route
 router.post(
     '/add/classification', 
     invValidate.classificationRules(), 
@@ -37,7 +37,7 @@ router.post(
     uhe(invController.addClassification)
 );
 
-// Route to add new inventory item
+// add new inventory item submission route
 router.post(
     '/add/inventory', 
     invValidate.invRules(), 
@@ -45,13 +45,31 @@ router.post(
     uhe(invController.addInventory)
 );
 
-// Route to add throw an error
+// get inventory JSON route
+router.get(
+    '/getInventory/:classification_id',
+    uhe(invController.getInventoryJSON)
+);
+
+router.get(
+    '/edit/:inv_id',
+    uhe(invController.editInvItemView)
+);
+
+router.post(
+    '/update',
+    invValidate.invRules(), 
+    uhe(invValidate.checkAddInvData), 
+    uhe(invController.updateInventory)
+)
+
+// throw error route
 router.get(
     '/ouch', 
     uhe(invController.ouch)
 );
 
-// Route to build inventory management view
+// inventory management route
 router.get(
     '/', 
     uhe(invController.buildManagement)

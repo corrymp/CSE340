@@ -1,11 +1,11 @@
 <%# html %><%# body %><%# div#wrapper%><%# main %>
-                <section id="add-inv" class="inv-add-page">
+                <section id="update-inv" class="inv-update-page">
                     <h1><%- title %></h1>
                     <%- messages() %><% if (errors) { %>
                     <ul class="notice"><% errors.array().forEach(error=> { %>
                         <li><%= error.msg %></li><% }) %>
                     </ul><% } %>
-                    <form action="/inv/add/inventory" method="post">
+                    <form action="/inv/update" method="post">
                         <label for="classification_id">Classification</label>
                         <%- classificationSelect %>
                         
@@ -34,8 +34,11 @@
                         <input type="text" name="inv_color" id="inv_color" placeholder="Gray" required value="<%= locals.inv_color %>">
 
                         <label for="inv_description">Description</label>
-                        <textarea name="inv_description" id="inv_description" placeholder="Ol' faithful" required><%= locals.inv_description %></textarea>
+                        <textarea name="inv_description" id="inv_description" placeholder="Ol' faithful" required><%= locals.inv_description.replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#x27;/g,"'").replace(/&#x60;/g,'`') %></textarea>
 
-                        <button type="submit">Add Vehicle</button>
+                        <input type="hidden" name="inv_id"<%if(locals.inv_id){%> value="<%=locals.inv_id%>"<%}%>>
+
+                        <button type="submit" disabled>Update Vehicle</button>
                     </form>
+                    <script src="/js/inv-update.js"></script>
                 </section>

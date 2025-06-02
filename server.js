@@ -5,6 +5,7 @@ const env = require('dotenv').config();
 const session = require('express-session');
 const pool = require('./database');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const app = express();
 
 const staticContent = require('./routes/static');
@@ -34,6 +35,10 @@ app.use((req, res, next) => {
 // for forms
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// for auth
+app.use(cookieParser());
+app.use(utilities.checkJWTToken);
 //#endregion middleware
 
 //#region layout

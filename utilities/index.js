@@ -1,5 +1,7 @@
 const invModel = require('../models/inventory-model');
+const jwt = require('jsonwebtoken');
 const fs = require('fs');
+require('dotenv').config();
 const Util = {};
 
 const numFormatEnUS = new Intl.NumberFormat('en-us');
@@ -38,12 +40,12 @@ Util.commaify = n => (i => (l => (d => `${l ? `${i.substring(0, l)},` : ''}${i.s
  * @description Constructs the nav HTML unordered list
  */
 Util.getNav = async (req, res, next) => (
-                `<ul>
+    `<ul>
                     <li><a href="/" title="Home page">Home</a></li>${(await invModel.getClassifications()).rows.map(row => `
                     <li><a href="/inv/type/${row.classification_id}" title="See our inventory of ${row.classification_name} vehicles">${row.classification_name}</a></li>`).join('')}
                 </ul>`
 );
-                 
+
 /**
  * @param {Object[]} invData - rows from SQL query containing vehicles by classification
  * @param {String} invData.inv_make - vehicle make
@@ -54,7 +56,7 @@ Util.getNav = async (req, res, next) => (
  * @returns {String} built HTML string of vehicles grid
  * @description build the classification view HTML
  */
-Util.buildClassificationGrid = async data => data.length > 0 
+Util.buildClassificationGrid = async data => data.length > 0
     ? `<ul id="inv-display">${data.map(v => `
                         <li><a href="../../inv/detail/${v.inv_id}" title="View ${v.inv_make} ${v.inv_model} details">
                             <img src="${v.inv_thumbnail}" alt="${v.inv_make} ${v.inv_model} available on CSE Motors">
@@ -72,12 +74,12 @@ Util.buildClassificationGrid = async data => data.length > 0
  * @returns {String} build HTML string of "select" populated with "option"s
  */
 Util.buildClassificationList = async classification_id => (
-                        `<select name="classification_id" id="classification_id" required>
+    `<select name="classification_id" id="classification_id" required>
                             <option value="" class="select-unused">Classification...</option>${(await invModel.getClassifications()).rows.map(row => `
                             <option ${classification_id === row.classification_id ? 'selected ' : ''}value="${row.classification_id}">${row.classification_name}</option>`).join('')}
                         </select>`
 );
-      
+
 /**
  * @param {Object} invData - data to build page from
  * @param {String} invData.inv_year - vehicle year
@@ -107,6 +109,39 @@ Util.buildInventoryPage = async invData => [
  * @returns {Promise}
  * @description attempts to run callback function, and catches errors that may arise
  */
-Util.handleErrors = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
+Util.handleErrors = fn => (req, res, next) => 
+    Promise.resolve(fn(req, res, next)).catch(next);
+
+/**
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @param {NextFunction} next - Express next callback
+ * @description verifies authenticity of JWT
+ */
+Util.checkJWTToken = (req, res, next) => {
+    if (req.cookies.jwt) {
+        jwt.verify(
+            req.cookies.jwt,
+            process.env.ACCESS_TOKEN_SECRET,
+            (err, accountData) => {
+                if (err) {
+                    req.flash('Please log in');
+                    res.clearCookie('jwt');
+                    return res.redirect('/account/login');
+                }
+                res.locals.accountData = accountData;
+                res.locals.loggedin = 1;
+                next();
+            }
+        )
+    }
+    else next();
+}
+
+Util.checkLogin = (req, res, next) => res.locals.loggedin 
+    ? next() 
+    : (req.flash('notice', 'Please log in.'), res.redirect('/account/login'));
+
+Util.unescape = str => str.replace(/(?:&amp;|&lt;|&gt;|&quot;|&#x27;|&#x60;)/g, i => ({"&amp;": "&","&lt;": "<","&gt;": ">","&quot;": '"',"&#x27;": "'","&#x60;": "`"})[i]);
 
 module.exports = Util;

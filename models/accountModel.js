@@ -1,5 +1,6 @@
 const pool = require('../database');
-const verbose = true;
+const verbose = false;
+const extraDetails = false;
 
 /**
  * @param {String} account_firstname - users first name
@@ -22,7 +23,7 @@ const registerAccount = async (account_firstname, account_lastname, account_emai
                 VALUES ( $1, $2, $3, $4 )
                 RETURNING *`,
             [account_firstname, account_lastname, account_email, account_password],
-            verbose
+            verbose, extraDetails
         );
     }
     catch (e) {
@@ -37,7 +38,7 @@ const checkExistingEmail = async account_email => {
                 FROM account
                 WHERE account_email = $1`,
             [account_email],
-            verbose
+            verbose, extraDetails
         );
         return email.rowCount;
     }
@@ -46,23 +47,26 @@ const checkExistingEmail = async account_email => {
     }
 }
 
-const checkAccount = async (account_email, account_password) => {
+const getAccountByEmail = async account_email => {
     try {
-        const account = await pool.query(
-            `SELECT * 
+        const result = await pool.query(
+            `SELECT 
+                    account_id, 
+                    account_firstname, 
+                    account_lastname, 
+                    account_email,
+                    account_type,
+                    account_password
                 FROM account
-                WHERE account_email = $1
-                AND account_password = $2`,
-            [account_email, account_password],
-            verbose
+                WHERE account_email = $1`,
+            [account_email],
+            verbose, extraDetails
         );
-
-        if(account.rows[0]) return account.rows[0];
-        return false;
+        return result.rows[0];
     }
     catch (e) {
-        return error.message;
+        return new Error('No matching email found');
     }
 }
 
-module.exports = { registerAccount, checkExistingEmail, checkAccount };
+module.exports = { registerAccount, checkExistingEmail, getAccountByEmail };
