@@ -1,6 +1,6 @@
 const pool = require('../database/');
-const verbose = true;
-const extraDetails = true;
+const verbose = false;
+const extraDetails = false;
 
 /**
  * @returns {Object} results of SQL query
@@ -161,6 +161,21 @@ const updateInventory = async (inv_id, inv_make, inv_model, inv_description, inv
     catch (e) { console.error('model error: ' + e); }
 }
 
+const deleteInventoryItem = async inv_id => {
+    try {
+        return await pool.query(
+            `DELETE
+                FROM inventory
+                WHERE inv_id = $1`,
+            [inv_id],
+            verbose, extraDetails
+        );
+    }
+    catch (e) {
+        console.error('Inventory deletion error: ' + e);
+    }
+}
+
 module.exports = {
     getClassifications,
     getClassificationById,
@@ -169,5 +184,6 @@ module.exports = {
     getInventoryById,
     addClassification,
     addInventory,
-    updateInventory
+    updateInventory,
+    deleteInventoryItem
 };

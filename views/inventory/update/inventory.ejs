@@ -34,7 +34,7 @@
                         <input type="text" name="inv_color" id="inv_color" placeholder="Gray" required value="<%= locals.inv_color %>">
 
                         <label for="inv_description">Description</label>
-                        <textarea name="inv_description" id="inv_description" placeholder="Ol' faithful" required><%= locals.inv_description.replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#x27;/g,"'").replace(/&#x60;/g,'`') %></textarea>
+                        <textarea name="inv_description" id="inv_description" placeholder="Ol' faithful" required><% if (locals.inv_description) { %><%= locals.inv_description.replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#x27;/g,"'").replace(/&#x60;/g,'`') %><% } %></textarea>
 
                         <input type="hidden" name="inv_id"<%if(locals.inv_id){%> value="<%=locals.inv_id%>"<%}%>>
 

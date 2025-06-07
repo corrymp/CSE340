@@ -1,4 +1,3 @@
-const { parse } = require('dotenv');
 const invModel = require('../models/inventory-model');
 const utilities = require('../utilities');
 const invCont = {};
@@ -87,17 +86,11 @@ invCont.addClassification = async (req, res, next) => {
     }
 
     // I forgot to include "'notice'" and spent 2 days banging my head against the table trying to figure it out
-    req.flash('notice', addClassificationResult ? `${classification_name} classification successfully added.` : `Failed to add classification "${classification_name}".`);
+    req.flash('notice', addClassificationResult 
+        ? `${classification_name} classification successfully added.` 
+        : `Failed to add classification "${classification_name}".`);
 
-    addClassificationResult
-        ? res.status(201).redirect('/inv')
-        : res.status(501).render('inventory/add/classification', {
-            title: 'Add Classififcation',
-            nav: await utilities.getNav(),
-            errors: null,
-            classification_name,
-            lastModified: utilities.lastModified
-        });
+    res.status(addClassificationResult ? 201 : 501).redirect(addClassificationResult ? '/inv' : '/inv/add/classification')
 };
 
 /**
@@ -134,24 +127,26 @@ invCont.addInventory = async (req, res, next) => {
 
     req.flash('notice', addInventoryResult ? `${inv_year} ${inv_make} ${inv_model} successfully added.` : `Failed to add vehicle "${inv_year} ${inv_make} ${inv_model}".`);
 
-    addInventoryResult
-        ? res.status(201).redirect('/inv')
-        : res.status(501).render('inventory/add/inventory', {
-            title: 'Add Inventory',
-            nav: await utilities.getNav(),
-            errors: null,
-            classificationSelect: await utilities.buildClassificationList(classification_id),
-            inv_make,
-            inv_model,
-            inv_image,
-            inv_thumbnail,
-            inv_price,
-            inv_year,
-            inv_miles,
-            inv_color,
-            inv_description,
-            lastModified: utilities.lastModified
-        });
+    res.status(addInventoryResult ? 201 : 501).redirect(addInventoryResult ? '/inv' : '/inv/add/inventory');
+
+    //addInventoryResult
+    //    ? res.status(201).redirect('/inv')
+    //    : res.status(501).render('inventory/add/inventory', {
+    //        title: 'Add Inventory',
+    //        nav: await utilities.getNav(),
+    //        errors: null,
+    //        classificationSelect: await utilities.buildClassificationList(classification_id),
+    //        inv_make,
+    //        inv_model,
+    //        inv_image,
+    //        inv_thumbnail,
+    //        inv_price,
+    //        inv_year,
+    //        inv_miles,
+    //        inv_color,
+    //        inv_description,
+    //        lastModified: utilities.lastModified
+    //    });
 };
 
 /**
@@ -196,7 +191,7 @@ invCont.editInvItemView = async (req, res, next) => {
         classification_id: invData.classification_id,
         lastModified: utilities.lastModified
     });
-}
+};
 
 invCont.updateInventory = async (req, res, next) => {
     const {
@@ -234,27 +229,31 @@ invCont.updateInventory = async (req, res, next) => {
         : 'Update failed.'
     );
 
-    updateResult
-        ? res.redirect('/inv')
-        : res.render('inventory/edit/inventory', {
-            title: `Edit ${itemName}`,
-            nav: await utilities.getNav(),
-            classificationSelect: await utilities.buildClassificationList(classification_id),
-            errors: null,
-            inv_id,
-            inv_make,
-            inv_model,
-            inv_description,
-            inv_image,
-            inv_thumbnail,
-            inv_price,
-            inv_year,
-            inv_miles,
-            inv_color,
-            classification_id,
-            lastModified: utilities.lastModified
-        });
-}
+    res.status(updateResult ? 201 : 501).redirect(updateResult ? '/inv' : `/inv/edit/${inv_id}`);
+};
+
+invCont.delItemView = async (req, res, next) => {
+    const invData = (await invModel.getInventoryById(parseInt(req.params.inv_id))).rows[0] || {};
+
+    res.render('./inventory/delete', {
+        title: `Delete ${invData.inv_make} ${invData.inv_model}`,
+        nav: await utilities.getNav(),
+        errors: null,
+        inv_id: invData.inv_id,
+        inv_make: invData.inv_make,
+        inv_model: invData.inv_model,
+        inv_year: invData.inv_year,
+        inv_price: invData.inv_price,
+        lastModified: utilities.lastModified
+    });
+};
+
+invCont.deleteInventoryItem = async (req, res, next) => {
+    const inv_id = req.body.inv_id;
+    const delRes = await invModel.deleteInventoryItem(inv_id);
+    req.flash('notice', delRes ? 'Item deleted.' : 'Deletion failed.');
+    res.status(delRes ? 201 : 501).redirect(delRes ? '/inv' : `/inv/delete/${inv_id}`);
+};
 
 /**
  * @param {Request} req - Express request object

@@ -16,7 +16,7 @@ const imagePath = value => body(value)
     .trim()
     .notEmpty()
     .withMessage(msg(value, 'left empty'))
-    .matches(/^(?=(?:.*\/)).*\.(?:apng|avif|gif|jpeg|png|svg|webp|bmp|ico|tiff)$/i)
+    .matches(/^(?=(?:.*\/)).*\.(?:apng|avif|gif|jpg|jpeg|jfif|pjpeg|pjp|png|svg|webp|bmp|ico|cur|tif|tiff)$/i)
     .withMessage(msg(value, 'should include a path and file extension'));
 
 const numMin0 = value => sanitize(value)
@@ -34,6 +34,7 @@ const classificationExists = (value, shouldExist) => body(value)
     .notEmpty()
     .withMessage('classification left empty.')
     .custom(async classification => {
+        if(!classification) throw new Error('No classification provided.');
         const classificationExists = await invModel[value === 'classification_name' ? 'getClassificationByName' : 'getClassificationById'](classification);
         if (shouldExist && classificationExists.rows.length === 0) throw new Error('Chosen classification does not exist.');
         if (!shouldExist && classificationExists.rows.length !== 0) throw new Error('Classification already exists.');

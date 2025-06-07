@@ -45,7 +45,7 @@ const checkExistingEmail = async account_email => {
     catch (e) {
         return error.message;
     }
-}
+};
 
 const getAccountByEmail = async account_email => {
     try {
@@ -67,6 +67,62 @@ const getAccountByEmail = async account_email => {
     catch (e) {
         return new Error('No matching email found');
     }
+};
+
+const getAccountById = async account_id => {
+    try {
+        const result = await pool.query(
+            `SELECT 
+                    account_id, 
+                    account_firstname, 
+                    account_lastname, 
+                    account_email,
+                    account_type,
+                    account_password
+                FROM account
+                WHERE account_id = $1`,
+            [account_id],
+            verbose, extraDetails
+        );
+        return result.rows[0];
+    }
+    catch (e) {
+        return new Error('No account found');
+    }
+};
+
+const updateAccount = async (account_id, account_email, account_firstname, account_lastname) => {
+    try {
+        return await pool.query(
+            `UPDATE account
+                SET account_email = $2,
+                    account_firstname = $3,
+                    account_lastname = $4
+                WHERE account_id = $1
+                RETURNING *`,
+            [account_id, account_email, account_firstname, account_lastname],
+            verbose, extraDetails
+        );
+    } 
+    catch (e) {
+        return error.message;
+    }
 }
 
-module.exports = { registerAccount, checkExistingEmail, getAccountByEmail };
+const updatePW = async (account_id, account_password) => {
+    try {
+        return await pool.query(
+            `UPDATE account
+                SET account_password = $2
+                WHERE account_id = $1
+                RETURNING *`,
+            [account_id, account_password],
+            verbose, extraDetails
+        );
+    } 
+    catch (e) {
+        return error.message;
+    }
+}
+
+module.exports = { registerAccount, checkExistingEmail, getAccountByEmail, getAccountById, updateAccount, updatePW };

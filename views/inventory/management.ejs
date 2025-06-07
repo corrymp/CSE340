@@ -2,20 +2,25 @@
                 <section id="management">
                     <h1><%- title %></h1>
                     <%- messages() %>
-                    <form>
-                        <a href="/inv/add/classification" title="add a new inventory classification to the site">Add New Classification</a>
+                    <form><% if (locals.accountData.account_type === 'Admin') { %>
+                        <section>
+                            <h2>Add Inventory Items</h2>
+                            
+                            <a href="/inv/add/classification" title="add a new inventory classification to the site">Add New Classification</a>
 
-                        <a href="/inv/add/inventory" title="add a new vehicle to the site">Add New Vehicle</a>
+                            <a href="/inv/add/inventory" title="add a new vehicle to the site">Add New Vehicle</a>
+                        </section>
+                        <% } %><section>
+                            <h2>Manage Inventory</h2>
 
-                        <h2>Manage Inventory</h2>
+                            <p>Choose a classification to see the inventory of.</p>
 
-                        <p>Choose a classification to see the inventory of.</p>
+                            <%- classificationSelect %>
 
-                        <%- classificationSelect %>
+                            <table id="inventoryDisplay"></table>
 
-                        <table id="inventoryDisplay"></table>
-
-                        <noscript>JavaScript must be enabled to use these features.</noscript>
-                        <script src="../../js/inventory.js"></script>
+                            <noscript>JavaScript must be enabled to use these features.</noscript>
+                            <script src="../../js/inventory.js"></script>
+                        </section>
                     </form>
                 </section>

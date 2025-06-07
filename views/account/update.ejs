@@ -1,0 +1,47 @@
+<%# html %><%# body %><%# div#wrapper%><%# main %>
+                <section id="update-account" class="account-update">
+                    <h1><%- title %></h1>
+
+                    <%- messages() %><% if (errors) { %><ul class="notice errors"><% errors.array().forEach(error => { %>
+                        <li><%= error.msg %></li><% }) %>
+                    </ul><% } %>
+
+                    <form action="/account/update/user" method="post">
+                        <label for="account_email">Email address</label>
+                        <input type="email" name="account_email" id="account_email" placeholder="you@email.com" required value="<%- account_email %>">
+
+                        <label for="account_firstname">First name</label>
+                        <input type="text" name="account_firstname" id="account_firstname" placeholder="Alex" required value="<%- account_firstname %>">
+
+                        <label for="account_lastname">Last name</label>
+                        <input type="text" name="account_lastname" id="account_lastname" placeholder="Smith" required value="<%- account_lastname %>">
+
+                        <input type="hidden" name="account_id" id="update-account-id" value="<%- locals.account_id %>">
+
+                        <button type="submit">Update Account</button>
+                    </form>
+
+                    <form action="/account/update/password" method="post">
+                        <label for="account_password">Password</label>
+
+                        <span class="input">
+                            <input type="password" name="account_password" id="account_password" pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{12,}$" title="Passwords must be at least of 12 characters along with having the following: a number (0-9), an uppercase letter (A-Z), and a special character (such as & or #)" placeholder="Sw0rdf!sh" required>
+                            <button class="show-pw" type="button">Show</button>
+                        </span>
+
+                        <div class="pw-req">Passwords must be at least 12 characters along with having the following:
+                            <ol>
+                                <li>a number (0-9)</li>
+                                <li>an uppercase letter (A-Z)</li>
+                                <li>a "special" character (such as & or #)</li>
+                            </ol>
+                        </div>
+
+                        <input type="hidden" name="account_id" id="change-pw-id" value="<%- locals.account_id %>">
+
+                        <p class="notice"><b>Important!</b><br>By changing your password, your old password will be unusable.<br><em>You must use your new password in all future log-in attempts.</em></p>
+                        
+                        <button type="submit">Change Password</button>
+                    </form>
+                    <script src="/js/showpw.js"></script>
+                </section>

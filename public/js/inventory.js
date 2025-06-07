@@ -1,6 +1,6 @@
 'use strict';
 
-document.getElementById('classification_id').addEventListener('change', function () {
+function load() {
     const classification_id = this.value;
 
     if (classification_id) return fetch(`/inv/getInventory/${classification_id}`)
@@ -9,21 +9,25 @@ document.getElementById('classification_id').addEventListener('change', function
         .catch(err => console.error('There was a problem: ', err.message));
 
     inventoryDisplay.textContent = '';
-});
+}
 
-const buildInventoryList = data => inventoryDisplay.innerHTML =
-    `<thead>
-        <tr>
-            <th>Vehicle Name</th>
-            <td>&nbsp;</td>
-            <td>&nbsp;</td>
-        </tr>
-    </thead>
+const buildInventoryList = data => inventoryDisplay.innerHTML = `
+                                <thead>
+                                    <tr>
+                                        <th>Vehicle Name</th>
+                                        <td>&nbsp;</td>
+                                        <td>&nbsp;</td>
+                                    </tr>
+                                </thead>
 
-    <tbody>${data.map(el => `
-        <tr>
-            <td>${el.inv_make} ${el.inv_model}</td>
-            <td><a href="/inv/edit/${el.inv_id}" title="Click to update">Modify</a></td>
-            <td><a href="/inv/delete/${el.inv_id}" title="Click to delete">Delete</a></td>
-        </tr>`).join('')}
-    </tbody>`;
+                                <tbody>${data.map(el => `
+                                    <tr>
+                                        <td>${el.inv_make} ${el.inv_model}</td>
+                                        <td><a href="/inv/edit/${el.inv_id}" title="Click to update">Modify</a></td>
+                                        <td><a href="/inv/delete/${el.inv_id}" title="Click to delete">Delete</a></td>
+                                    </tr>`).join('')}
+                                </tbody>
+                            `;
+
+classification_id.addEventListener('change', load);
+load.bind(classification_id)();

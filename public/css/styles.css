@@ -69,6 +69,18 @@ h2,
     font-family: 'Lora', serif;
 }
 
+b {
+    font-weight: bold;
+}
+
+em {
+    font-style: italic;
+}
+
+hr {
+    border-color: var(--bright-yellow);
+}
+
 .notice {
     background-color: var(--bright-yellow);
     color: var(--red);
@@ -76,6 +88,10 @@ h2,
     margin: .5em 0;
     padding: .33em;
     text-align: center;
+}
+
+.notice:not(:has(li)) {
+    display: none;
 }
 
 /*#endregion global*/
@@ -108,7 +124,8 @@ body {
 
 /*#region header*/
 header {
-    display: flex;
+    display: grid;
+    grid-template-columns: auto auto;
     justify-content: space-between;
     margin-bottom: 1.5em;
 }
@@ -121,11 +138,17 @@ header a {
     font-size: 1.8em;
     font-weight: bolder;
     left: 0.32em;
+    margin-right: .5em;
     position: relative;
     top: 0.48em;
 }
 
 #tools {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 .25em;
+    justify-content: right;
     position: relative;
     right: 0.5em;
     top: 1em;
@@ -620,6 +643,31 @@ form:has(.hover-reveal:hover, .hover-reveal:checked) .hover-show {
     text-align: center;
 }
 
+#logged-in hr {
+    border-color: var(--light-green);
+    border-width: 1px 0;
+    margin: .4em 0 -.5em;
+}
+
+#logged-in form {
+    padding: .5em 0;
+    max-width: 90%;
+    width: unset;
+}
+
+.account-update form:first-of-type {
+    border-bottom: 2px inset var(--light-green);
+    border-radius: .33em .33em 0 0;
+}
+
+.account-update form:last-of-type {
+    border-top: 1px inset var(--light-green);
+    border-radius: 0 0 .33em .33em;
+}
+
+form:has(.account-info) {
+    text-align: center;
+}
 /* #endregion account */
 
 /* #region forms */
@@ -634,7 +682,29 @@ form {
     margin: 0 auto;
     max-width: 400px;
     padding: .5em;
+    position: relative;
     width: 66%;
+}
+
+form section {
+    display: flex;
+    flex-direction: column;
+}
+
+form h2 {
+    font-size: 1.5em;
+    margin-bottom: .33em;
+}
+
+form h3 {
+    font-size: 1.33em;
+    margin-bottom: .33em;
+    margin-top: .66em;
+}
+
+form a,
+form p {
+    margin-bottom: .33em;
 }
 
 form input,
@@ -687,7 +757,77 @@ form :disabled {
 
 /* #endregion forms */
 
-/* ups padding on nav lis when screen width is 345px+; nav overflows if this is used by default */
+/* #region tables */
+
+table {
+    border: 1px solid var(--bright-yellow);
+    border-spacing: 0;
+    margin-top: .33em;
+    overflow: hidden;
+    border-radius: .5em;
+}
+
+table:empty {
+    border: 0;
+}
+
+tr {
+    background-color: #ffffff07;
+    border-bottom: 1px solid var(--bright-yellow);
+}
+
+tr:nth-of-type(even) {
+    background-color: #0003;
+}
+
+th {
+    text-align: unset;
+}
+
+th,
+td {
+    padding: .33em;
+}
+
+th,
+td:first-of-type {
+    padding-left: .5em;
+}
+
+td:last-of-type {
+    padding-right: .5em;
+}
+
+table a:hover {
+    font-style: italic;
+}
+
+/* #endregion tables */
+
+/* #region datalist */
+dl {
+    display: grid;
+    grid-template-columns: auto auto;
+    margin-bottom: .33em;
+    text-align: left;
+}
+
+dt {
+    padding: .165em;
+    padding-left: 1em;
+}
+
+dd {
+    padding: .165em;
+}
+
+:where(dt,dd):nth-of-type(odd) {
+    background-color: #0002;
+}
+
+/* #endregion datalist */
+
+/* ups padding on nav list when screen width is 345px+; nav overflows if this is used by default */
 @media screen and (min-width: 345px) {
     nav li {
         padding: 1em .5em;

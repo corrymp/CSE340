@@ -227,3 +227,20 @@ section:where(#upgrades, #reviews) ul {
     font-size: 1.2em;
 }
 /* #endregion details */
+
+/* #region account */
+
+#logged-in form {
+    max-width: 400px;
+    width: 66%;
+}
+
+/* #endregion account */
+
+/* #region datalist */
+
+dt {
+    text-align: right;
+}
+
+/* #endregion datalist */
