@@ -733,7 +733,7 @@ form label:first-of-type {
     margin-top: 0;
 }
 
-form label::before {
+section:not(#management) form label::before {
     color: var(--red);
     content: '*';
     display: inline-block;
