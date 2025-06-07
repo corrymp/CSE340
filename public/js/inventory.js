@@ -15,8 +15,7 @@ const buildInventoryList = data => inventoryDisplay.innerHTML = `
                                 <thead>
                                     <tr>
                                         <th>Vehicle Name</th>
-                                        <td>&nbsp;</td>
-                                        <td>&nbsp;</td>
+                                        <th colspan="2">Actions</th>
                                     </tr>
                                 </thead>
 

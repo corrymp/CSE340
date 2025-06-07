@@ -228,14 +228,11 @@ section:where(#upgrades, #reviews) ul {
 }
 /* #endregion details */
 
-/* #region account */
-
-#logged-in form {
-    max-width: 400px;
+/* #region forms */
+form {
     width: 66%;
 }
-
-/* #endregion account */
+/* #endregion forms */
 
 /* #region datalist */
 

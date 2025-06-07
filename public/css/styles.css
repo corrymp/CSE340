@@ -651,8 +651,6 @@ form:has(.hover-reveal:hover, .hover-reveal:checked) .hover-show {
 
 #logged-in form {
     padding: .5em 0;
-    max-width: 90%;
-    width: unset;
 }
 
 .account-update form:first-of-type {
@@ -683,7 +681,7 @@ form {
     max-width: 400px;
     padding: .5em;
     position: relative;
-    width: 66%;
+    width: 90%;
 }
 
 form section {
@@ -778,10 +776,6 @@ tr {
 
 tr:nth-of-type(even) {
     background-color: #0003;
-}
-
-th {
-    text-align: unset;
 }
 
 th,
