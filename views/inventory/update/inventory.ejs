@@ -5,7 +5,8 @@
                     <ul class="notice"><% errors.array().forEach(error=> { %>
                         <li><%= error.msg %></li><% }) %>
                     </ul><% } %>
-                    <form action="/inv/update" method="post">
+                    
+                    <form action="/inv/update/inventory/<%- inv_id %>" method="post">
                         <label for="classification_id">Classification</label>
                         <%- classificationSelect %>
                         

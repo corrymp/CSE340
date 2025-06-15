@@ -1,72 +1,17 @@
+//#region dependencies
 const invModel = require('../models/inventory-model');
-const utilities = require('../utilities');
-const invCont = {};
+const util = require('../utilities');
+const invCtrl = {};
+//#endregion dependencies
 
-/**
- * @param {Request} req - Express request object
- * @param {Response} res - Express response object
- * @param {NextFunction} next - Express next callback
- * @description build inventory by classification view
- */
-invCont.buildByClassificationId = async (req, res, next) => {
-    const classification_id = req.params.classificationId;
-    const data = await invModel.getInventoryByClassificationId(classification_id);
-
-    /*
-        the classification name can be accessed through any inventory item... 
-        **IF** there are any inventory items available!
-        if there are not, we need to look up the name.
-        if there are no classifications with the provided ID, then the user should not be here so we send them home
-    */
-    let title;
-
-    if (data?.rows?.length > 0) title = `${data.rows[0].classification_name} vehicles`;
-    else {
-        const classification = await invModel.getClassificationById(classification_id);
-        if (classification?.rows?.length > 0) title = `${classification.rows[0].classification_name} vehicles`;
-        else return res.redirect('/');
-    }
-
-    res.render('./inventory/classification', {
-        title,
-        nav: await utilities.getNav(),
-        grid: await utilities.buildClassificationGrid(data),
-        errors: null,
-        lastModified: utilities.lastModified
-    });
-};
-
+//#region create
 /**
  * @param {Request} req - Express request object
  * @param {Response} res - Express response object
  * @param {NextFunction} next - Express next callback
  * @description build inventory item by ID view
  */
-invCont.buildByVehicleId = async (req, res, next) => {
-    const data = await invModel.getInventoryById(req.params.vehicleId);
-    const pageData = await utilities.buildInventoryPage(data.rows[0]);
-
-    res.render('./inventory/detail', {
-        title: pageData[0],
-        nav: await utilities.getNav(),
-        page: pageData[1],
-        errors: null,
-        lastModified: utilities.lastModified
-    });
-};
-
-/**
- * @param {Request} req - Express request object
- * @param {Response} res - Express response object
- * @param {NextFunction} next - Express next callback
- * @description build inventory item by ID view
- */
-invCont.buildAddClassification = async (req, res, next) => res.render('inventory/add/classification', {
-    title: 'Add Classification',
-    nav: await utilities.getNav(),
-    errors: null,
-    lastModified: utilities.lastModified
-});
+invCtrl.addClassificationView = async (req, res, next) => res.render('inventory/add/classification', { title: 'Add Classification', nav: await util.getNav(), errors: null, lastModified: util.lastModified });
 
 /**
  * @param {Request} req - Express request object
@@ -74,23 +19,13 @@ invCont.buildAddClassification = async (req, res, next) => res.render('inventory
  * @param {NextFunction} next - Express next callback
  * @description build post add classification view. If pass: management; else: add classification
  */
-invCont.addClassification = async (req, res, next) => {
+invCtrl.addClassificationHandler = async (req, res, next) => {
     const { classification_name } = req.body;
-    let addClassificationResult;
-
-    try {
-        addClassificationResult = await invModel.addClassification(classification_name);
-    }
-    catch (e) {
-        addClassificationResult = false; // just to be sure :shrug:
-    }
-
-    // I forgot to include "'notice'" and spent 2 days banging my head against the table trying to figure it out
-    req.flash('notice', addClassificationResult 
-        ? `${classification_name} classification successfully added.` 
-        : `Failed to add classification "${classification_name}".`);
-
-    res.status(addClassificationResult ? 201 : 501).redirect(addClassificationResult ? '/inv' : '/inv/add/classification')
+    let addRes;
+    try { addRes = await invModel.addClassification(classification_name); }
+    catch (e) { addRes = false; } // just to be sure :shrug:
+    req.flash('notice', addRes ? `${classification_name} classification successfully added.` : `Failed to add classification "${classification_name}".`);
+    res.status(addRes ? 201 : 500).redirect(addRes ? '/inv' : '/inv/add/classification')
 };
 
 /**
@@ -99,13 +34,7 @@ invCont.addClassification = async (req, res, next) => {
  * @param {NextFunction} next - Express next callback
  * @description build inventory item by ID view
  */
-invCont.buildAddInventory = async (req, res, next) => res.render('inventory/add/inventory', {
-    title: 'Add Inventory',
-    nav: await utilities.getNav(),
-    classificationSelect: await utilities.buildClassificationList(),
-    errors: null,
-    lastModified: utilities.lastModified
-});
+invCtrl.addInventoryView = async (req, res, next) => res.render('inventory/add/inventory', { title: 'Add Inventory', nav: await util.getNav(), classificationSelect: await util.buildClassificationList(), errors: null, lastModified: util.lastModified });
 
 /**
  * @param {Request} req - Express request object
@@ -113,40 +42,50 @@ invCont.buildAddInventory = async (req, res, next) => res.render('inventory/add/
  * @param {NextFunction} next - Express next callback
  * @description build post add inventory view. If pass: management; else: add inventory
  */
-invCont.addInventory = async (req, res, next) => {
+invCtrl.addInventoryHandler = async (req, res, next) => {
     const { classification_id, inv_make, inv_model, inv_image, inv_thumbnail, inv_price, inv_year, inv_miles, inv_color, inv_description } = req.body;
-
-    let addInventoryResult;
-
-    try {
-        addInventoryResult = await invModel.addInventory(classification_id, inv_make, inv_model, inv_image, inv_thumbnail, inv_price, inv_year, inv_miles, inv_color, inv_description);
+    let addRes;
+    try { addRes = await invModel.addInventory(classification_id, inv_make, inv_model, inv_image, inv_thumbnail, inv_price, inv_year, inv_miles, inv_color, inv_description); }
+    catch (e) { addRes = false; } // just to be sure :shrug:
+    req.flash('notice', addRes ? `${inv_year} ${inv_make} ${inv_model} successfully added.` : `Failed to add vehicle "${inv_year} ${inv_make} ${inv_model}".`);
+    res.status(addRes ? 201 : 500).redirect(addRes ? '/inv' : '/inv/add/inventory');
+};
+//#endregion create
+//#region read
+/**
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @param {NextFunction} next - Express next callback
+ * @description build inventory by classification view
+ */
+invCtrl.classificationView = async (req, res, next) => {
+    const classification_id = req.params.classificationId;
+    const data = await invModel.getAllInventoryByClassificationId(classification_id);
+    /*
+        the classification name can be accessed through any inventory item... 
+        **IF** there are any inventory items available!
+        if there are not, we need to look up the name.
+        if there are no classifications with the provided ID, then the user should not be here so we send them home
+    */
+    let title;
+    if (data?.rows?.length > 0) title = `${data.rows[0].classification_name} vehicles`;
+    else {
+        const classification = await invModel.getClassificationById(classification_id);
+        if (classification?.rows?.length > 0) title = `${classification.rows[0].classification_name} vehicles`;
+        else return res.status(404).redirect('/');
     }
-    catch (e) {
-        addInventoryResult = false; // just to be sure :shrug:
-    }
+    res.render('./inventory/classification', { title, nav: await util.getNav(), grid: await util.buildClassificationGrid(data), errors: null, lastModified: util.lastModified });
+};
 
-    req.flash('notice', addInventoryResult ? `${inv_year} ${inv_make} ${inv_model} successfully added.` : `Failed to add vehicle "${inv_year} ${inv_make} ${inv_model}".`);
-
-    res.status(addInventoryResult ? 201 : 501).redirect(addInventoryResult ? '/inv' : '/inv/add/inventory');
-
-    //addInventoryResult
-    //    ? res.status(201).redirect('/inv')
-    //    : res.status(501).render('inventory/add/inventory', {
-    //        title: 'Add Inventory',
-    //        nav: await utilities.getNav(),
-    //        errors: null,
-    //        classificationSelect: await utilities.buildClassificationList(classification_id),
-    //        inv_make,
-    //        inv_model,
-    //        inv_image,
-    //        inv_thumbnail,
-    //        inv_price,
-    //        inv_year,
-    //        inv_miles,
-    //        inv_color,
-    //        inv_description,
-    //        lastModified: utilities.lastModified
-    //    });
+/**
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @param {NextFunction} next - Express next callback
+ * @description build inventory item by ID view
+ */
+invCtrl.vehicleView = async (req, res, next) => {
+    const [title, page] = await util.buildInventoryDetailsView((await invModel.getInventoryById(req.params.vehicleId)).rows[0]);
+    res.render('./inventory/detail', { title, nav: await util.getNav(), page, errors: null, lastModified: util.lastModified });
 };
 
 /**
@@ -155,105 +94,154 @@ invCont.addInventory = async (req, res, next) => {
  * @param {NextFunction} next - Express next callback
  * @description build main inventory management view
  */
-invCont.buildManagement = async (req, res, next) => res.render('inventory/management', {
-    title: 'Inventory Management',
-    nav: await utilities.getNav(),
-    classificationSelect: await utilities.buildClassificationList(),
-    errors: null,
-    lastModified: utilities.lastModified
-});
+invCtrl.managementView = async (req, res, next) => res.render('inventory/management', { title: 'Inventory Management', nav: await util.getNav(), classificationSelect: await util.buildClassificationList(), errors: null, lastModified: util.lastModified });
 
-invCont.getInventoryJSON = async (req, res, next) => {
-    const invData = await invModel.getInventoryByClassificationId(parseInt(req.params.classification_id));
-
+/**
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @param {NextFunction} next - Express next callback
+ * @returns {Object[]} array of all inventory of given classification
+ */
+invCtrl.getInventoryJSON = async (req, res, next) => {
+    const invData = await invModel.getAllInventoryByClassificationId(parseInt(req.params.classification_id));
     if (invData[0]?.inv_id) return res.json(invData);
     else next(new Error('No data returned'));
 };
+//#endregion read
+//#region update
 
-invCont.editInvItemView = async (req, res, next) => {
-    const invData = (await invModel.getInventoryById(parseInt(req.params.inv_id))).rows[0];
+/**
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @param {NextFunction} next - Express next callback
+ * @description build edit classification view
+ */
+invCtrl.editClassificationView = async (req, res, next) => {
+    const {classification_id, classification_name} = (await invModel.getClassificationById(parseInt(req.params.classification_id))).rows[0];
+    res.render('./inventory/update/classification', {
+        title:                  `Edit ${classification_name}`,
+        nav:                    await util.getNav(),
+        errors:                 null,
+        lastModified:           util.lastModified,
+        classification_id, 
+        classification_name
+    });
+};
 
+/**
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @param {NextFunction} next - Express next callback
+ * @description attempts to update the given inventory item. if pass: redirect to management view; else: re-open edit view
+ */
+invCtrl.editClassificationHandler = async (req, res, next) => {
+    const { classification_id, classification_name } = req.body;
+    if(classification_id !== req.params.classification_id) throw new Error('ID mismatch');
+    const editRes = await invModel.updateInventoryById( {...req.body} );
+    req.flash('notice', editRes ? `${editRes.classification_name} was successfully updated.` : `Failed to update ${classification_name}.` );
+    res.status(editRes ? 201 : 500).redirect(editRes ? '/inv' : `/inv/update/classification/${inv_id}`);
+};
+
+/**
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @param {NextFunction} next - Express next callback
+ * @description build edit inventory view
+ */
+invCtrl.editInventoryView = async (req, res, next) => {
+    const {inv_id, inv_make, inv_model, inv_year, inv_description, inv_image, inv_thumbnail, inv_price, inv_miles, inv_color, classification_id} = (await invModel.getInventoryById(parseInt(req.params.inv_id))).rows[0];
     res.render('./inventory/update/inventory', {
-        title: `Edit ${invData.inv_make} ${invData.inv_model}`,
-        nav: await utilities.getNav(),
-        classificationSelect: await utilities.buildClassificationList(invData.classification_id),
-        errors: null,
-        inv_id: invData.inv_id,
-        inv_make: invData.inv_make,
-        inv_model: invData.inv_model,
-        inv_year: invData.inv_year,
-        inv_description: invData.inv_description,
-        inv_image: invData.inv_image,
-        inv_thumbnail: invData.inv_thumbnail,
-        inv_price: invData.inv_price,
-        inv_miles: invData.inv_miles,
-        inv_color: invData.inv_color,
-        classification_id: invData.classification_id,
-        lastModified: utilities.lastModified
+        title:                  `Edit ${inv_make} ${inv_model}`,
+        nav:                    await util.getNav(),
+        classificationSelect:   await util.buildClassificationList(classification_id),
+        errors:                 null,
+        lastModified:           util.lastModified,
+        inv_id, inv_make, inv_model, inv_year, inv_description, inv_image, inv_thumbnail, inv_price, inv_miles, inv_color, classification_id
     });
 };
 
-invCont.updateInventory = async (req, res, next) => {
-    const {
-        inv_id,
-        inv_make,
-        inv_model,
-        inv_description,
-        inv_image,
-        inv_thumbnail,
-        inv_price,
-        inv_year,
-        inv_miles,
-        inv_color,
-        classification_id
-    } = req.body;
-
-    const updateResult = await invModel.updateInventory(
-        inv_id,
-        inv_make,
-        inv_model,
-        inv_description,
-        inv_image,
-        inv_thumbnail,
-        inv_price,
-        inv_year,
-        inv_miles,
-        inv_color,
-        classification_id
-    );
-
-    const itemName = `${updateResult.inv_make} ${updateResult.inv_model}`;
-
-    req.flash('notice', updateResult
-        ? `${itemName} was successfully updated.`
-        : 'Update failed.'
-    );
-
-    res.status(updateResult ? 201 : 501).redirect(updateResult ? '/inv' : `/inv/edit/${inv_id}`);
+/**
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @param {NextFunction} next - Express next callback
+ * @description attempts to update the given inventory item. if pass: redirect to management view; else: re-open edit view
+ */
+invCtrl.editInventoryHandler = async (req, res, next) => {
+    const {inv_id, inv_make, inv_model, inv_description, inv_image, inv_thumbnail, inv_price, inv_year, inv_miles, inv_color, classification_id} = req.body;
+    if(inv_id !== req.params.inv_id) throw new Error('ID Mismatch');
+    const editRes = await invModel.updateInventoryById(inv_id, inv_make, inv_model, inv_description, inv_image, inv_thumbnail, inv_price, inv_year, inv_miles, inv_color, classification_id);
+    req.flash('notice', editRes ? `${editRes.inv_make} ${editRes.inv_model} was successfully updated.` : `Failed to update ${inv_make} ${inv_model}.` );
+    res.status(editRes ? 201 : 500).redirect(editRes ? '/inv' : `/inv/edit/inventory/${inv_id}`);
 };
-
-invCont.delItemView = async (req, res, next) => {
-    const invData = (await invModel.getInventoryById(parseInt(req.params.inv_id))).rows[0] || {};
-
-    res.render('./inventory/delete', {
-        title: `Delete ${invData.inv_make} ${invData.inv_model}`,
-        nav: await utilities.getNav(),
-        errors: null,
-        inv_id: invData.inv_id,
-        inv_make: invData.inv_make,
-        inv_model: invData.inv_model,
-        inv_year: invData.inv_year,
-        inv_price: invData.inv_price,
-        lastModified: utilities.lastModified
+//#endregion update
+//#region delete
+/**
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @param {NextFunction} next - Express next callback
+ * @description build delete inventory confirmation view
+ */
+invCtrl.deleteClassificationView = async (req, res, next) => {
+    const { classification_id, classification_name } = (await invModel.getClassificationById(parseInt(req.params.classification_id))).rows[0];
+    res.render('./inventory/delete/classification', {
+        title:          `Delete ${classification_name}`,
+        nav:            await util.getNav(),
+        inventoryList:  await util.buildInventoryList(await invModel.getAllInventoryByClassificationId(classification_id)),
+        errors:         null,
+        lastModified:   util.lastModified,
+        classification_id, 
+        classification_name
     });
 };
 
-invCont.deleteInventoryItem = async (req, res, next) => {
+/**
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @param {NextFunction} next - Express next callback
+ * @description attempts to delete the given inventory item. if pass: redirect to management view; else: re-open delete view
+ */
+invCtrl.deleteClassificationHandler = async (req, res, next) => {
+    const {classification_id} = req.body;
+    if(classification_id !== req.params.classification_id) throw new Error('ID mismatch');
+    const delRes = await invModel.deleteClassificationById(classification_id);
+    req.flash('notice', delRes ? `Classification and any inventory under it have been deleted.` : `Failed to delete classification`);
+    res.status(delRes ? 200 : 500).redirect(delRes ? '/inv' : `/inv/delete/classification/${classification_id}`);
+};
+
+/**
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @param {NextFunction} next - Express next callback
+ * @description build delete inventory confirmation view
+ */
+invCtrl.deleteInventoryView = async (req, res, next) => {
+    const { inv_id, inv_make, inv_model, inv_year, inv_price } = (await invModel.getInventoryById(parseInt(req.params.inv_id))).rows[0];
+    res.render('./inventory/delete/inventory', {
+        title:          `Delete ${inv_make} ${inv_model}`,
+        nav:            await util.getNav(),
+        errors:         null,
+        lastModified:   util.lastModified,
+        inv_id, 
+        inv_make, 
+        inv_model, 
+        inv_year, 
+        inv_price
+    });
+};
+
+/**
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @param {NextFunction} next - Express next callback
+ * @description attempts to delete the given inventory item. if pass: redirect to management view; else: re-open delete view
+ */
+invCtrl.deleteInventoryHandler = async (req, res, next) => {
     const inv_id = req.body.inv_id;
-    const delRes = await invModel.deleteInventoryItem(inv_id);
+    const delRes = await invModel.deleteInventoryById(inv_id);
     req.flash('notice', delRes ? 'Item deleted.' : 'Deletion failed.');
-    res.status(delRes ? 201 : 501).redirect(delRes ? '/inv' : `/inv/delete/${inv_id}`);
+    res.status(delRes ? 200 : 500).redirect(delRes ? '/inv' : `/inv/delete/inventory/${inv_id}`);
 };
+//#endregion delete
 
 /**
  * @param {Request} req - Express request object
@@ -261,6 +249,6 @@ invCont.deleteInventoryItem = async (req, res, next) => {
  * @param {NextFunction} next - Express next callback
  * @description cause an error
  */
-invCont.ouch = async (req, res, next) => next(new Error('ouch'));
+invCtrl.ouch = async (req, res, next) => (req.flash('notice', '*An error, as requested*'), res.status(418), next(new Error('ouch')));
 
-module.exports = invCont;
+module.exports = invCtrl;

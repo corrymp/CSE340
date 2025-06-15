@@ -1,0 +1,20 @@
+<%# html %><%# body %><%# div#wrapper%><%# main %>
+                <section id="delete-classification" class="classification-delete-page">
+                    <h1><%- title %></h1>
+                    <%- messages() %><% if (errors) { %>
+                    <ul class="notice"><% errors.array().forEach(error=> { %>
+                        <li><%= error.msg %></li><% }) %>
+                    </ul><% } %>
+
+                    <form action="/inv/delete/classification/<%- classification_id %>" method="post">
+                        <p>Deletion can <b>not</b> be undone. Confirm that this is the correct classification to delete <em>before</em> proceeding.</p>
+                        
+                        <label for="inv_make">Name</label>
+                        <input type="text" readonly<%if(locals.classification_name){%> value="<%= locals.classification_name %>"<%}%>>
+                        <%- inventoryList %>
+
+                        <input type="hidden" name="classification_id"<%if(locals.classification_id){%> value="<%=locals.classification_id%>"<%}%>>
+
+                        <button type="submit">Permenantly <%- title %></button>
+                    </form>
+                </section>

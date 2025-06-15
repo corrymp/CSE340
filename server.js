@@ -1,21 +1,28 @@
 //#region dependencies
 const express = require('express');
 const expressLayouts = require('express-ejs-layouts');
-const env = require('dotenv').config();
 const session = require('express-session');
+
 const pool = require('./database');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+
+require('dotenv').config();
+
 const app = express();
 
+//#region routers
 const staticContent = require('./routes/static');
 const baseController = require('./controllers/baseController');
 const accountRoute = require('./routes/accountRoute');
 const inventoryRoute = require('./routes/inventoryRoute');
 const utilities = require('./utilities/');
-//#endregion
+//#endregion routers
+
+//#endregion dependencies
 
 //#region middleware
+
 // session
 app.use(session({
     store: new (require('connect-pg-simple')(session))({ createTableIfMissing: true, pool }),
@@ -39,6 +46,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // for auth
 app.use(cookieParser());
 app.use(utilities.checkJWTToken);
+
 //#endregion middleware
 
 //#region layout
@@ -48,6 +56,7 @@ app.set('layout', './layouts/layout');
 //#endregion
 
 //#region routes
+
 /*
     ['/css', '/js', '/images']  => staticContent
     ['/', '/home']              => index
@@ -58,7 +67,7 @@ app.set('layout', './layouts/layout');
 */
 
 app.use(utilities.handleErrors(staticContent));
-app.get(['/', '/home'], utilities.handleErrors(baseController.buildHome));
+app.get(['/', '/home'], utilities.handleErrors(baseController.homeView));
 app.use('/account', utilities.handleErrors(accountRoute));
 app.use('/inv', utilities.handleErrors(inventoryRoute));
 app.use(async (req, res, next) => next({ status: 404, message: `Uh, idk where that page went, but it isn't here` }));
@@ -84,7 +93,8 @@ app.use(async (err, req, res, next) => {
 
     res.status(err.status || 500).render(`errors/${dest}`, destData);
 });
-//#endregion
+
+//#endregion routes
 
 //#region environment vars (.env)
 const port = process.env.PORT;

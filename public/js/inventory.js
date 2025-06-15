@@ -14,6 +14,10 @@ function load() {
 const buildInventoryList = data => inventoryDisplay.innerHTML = `
                                 <thead>
                                     <tr>
+                                        <th>Classification Actions:</th>
+                                        <th colspan="2"><a href="/inv/delete/classification/${data[0].classification_id}" title="Click to delete">Delete</a></th>
+                                    </tr>
+                                    <tr>
                                         <th>Vehicle Name</th>
                                         <th colspan="2">Actions</th>
                                     </tr>
@@ -22,8 +26,8 @@ const buildInventoryList = data => inventoryDisplay.innerHTML = `
                                 <tbody>${data.map(el => `
                                     <tr>
                                         <td>${el.inv_make} ${el.inv_model}</td>
-                                        <td><a href="/inv/edit/${el.inv_id}" title="Click to update">Modify</a></td>
-                                        <td><a href="/inv/delete/${el.inv_id}" title="Click to delete">Delete</a></td>
+                                        <td><a href="/inv/edit/inventory/${el.inv_id}" title="Click to update">Modify</a></td>
+                                        <td><a href="/inv/delete/inventory/${el.inv_id}" title="Click to delete">Delete</a></td>
                                     </tr>`).join('')}
                                 </tbody>
                             `;

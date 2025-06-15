@@ -17,11 +17,17 @@
                             </dl>
                             <a href="/account/update/<%- locals.accountData.account_id %>" title="go to account information update form">Update account information</a>
                         </section>
+                        <% if (locals.accountData.account_type === 'Admin') { %>
+                        <hr>
+                        <section>
+                            <h3>Account Management</h3>
+                            <p><a href="/account/manage" title="view account management page">Manage accounts</a></p>
+                        </section><% } %>
                         <% if (['Employee','Admin'].includes(locals.accountData.account_type)) { %>
                         <hr>
                         <section>
                             <h3>Inventory Management</h3>
-                            <p><a href="/inv" title="view inventory management page">Manage inventory</a></p><% } %>
-                        </section>
+                            <p><a href="/inv" title="view inventory management page">Manage inventory</a></p>
+                        </section><% } %>
                     </form>
                 </section>

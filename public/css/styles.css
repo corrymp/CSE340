@@ -666,6 +666,7 @@ form:has(.hover-reveal:hover, .hover-reveal:checked) .hover-show {
 form:has(.account-info) {
     text-align: center;
 }
+
 /* #endregion account */
 
 /* #region forms */
@@ -749,6 +750,10 @@ form button {
     padding: .33em .66em;
 }
 
+form:has(#itemsToRemove) {
+    max-width: unset;
+}
+
 form :disabled {
     opacity: .66;
 }
@@ -815,7 +820,7 @@ dd {
     padding: .165em;
 }
 
-:where(dt,dd):nth-of-type(odd) {
+:where(dt, dd):nth-of-type(odd) {
     background-color: #0002;
 }
 
@@ -825,5 +830,96 @@ dd {
 @media screen and (min-width: 345px) {
     nav li {
         padding: 1em .5em;
+    }
+}
+
+/* a lot of stuff needs to happen to make the "manage user accounts" table work at smaller screen sizes, and tossing it in this media query is far less painfull than resetting it all in the larger size stylesheet*/
+@media screen and (max-width: 580px) {
+    form:has(#accountType, #itemsToRemove) {
+        max-width: unset;
+        width: unset;
+    }
+
+    form:has(#accountType, #itemsToRemove) table {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    form:has(#accountType, #itemsToRemove) :where(tbody, thead) {
+        display: grid;
+        grid-column: 1/3;
+        grid-row: 1/2;
+        grid-template-columns: subgrid;
+        grid-template-rows: subgrid;
+    }
+
+    form:has(#accountType, #itemsToRemove) tbody {
+        grid-row-start: 2;
+        grid-template-columns: subgrid;
+        grid-template-rows: auto auto;
+    }
+
+    form:has(#accountType, #itemsToRemove) tr {
+        display: grid;
+        grid-column: 1/3;
+        grid-row: span 1;
+        grid-template-columns: subgrid;
+        grid-template-rows: auto auto;
+    }
+
+    form:has(#accountType, #itemsToRemove) :where(th, td) {
+        padding: .33em .125em .125em;
+    }
+
+    form:has(#accountType, #itemsToRemove) td:nth-of-type(2) {
+        border-left: 1px solid;
+    }
+
+    form:has(#accountType) th:nth-of-type(2)~th {
+        display: none;
+    }
+    
+    form:has(#itemsToRemove) th:nth-of-type(2)~th {
+        border-top: 1px solid var(--white);
+    }
+
+    form:has(#accountType, #itemsToRemove) td {
+        border-bottom: 1px solid;
+        grid-row: 1;
+    }
+
+    form:has(#accountType, #itemsToRemove) td:nth-of-type(2)~td {
+        border-bottom: 0;
+        grid-row: 2;
+        padding: .125em .125em .33em;
+    }
+
+    form:has(#accountType, #itemsToRemove) td:nth-of-type(3) {
+        grid-column: 1;
+    }
+
+    form:has(#accountType) td:nth-of-type(3)~td {
+        text-align: center;
+    }
+
+    form:has(#accountType, #itemsToRemove) td:nth-of-type(3)~td {
+        grid-column: 2;
+    }
+
+    form:has(#accountType) tr td:nth-of-type(4) {
+        padding-right: 50%;
+    }
+    
+    form:has(#accountType, #itemsToRemove) tr td:nth-of-type(4) {
+        border-left: 1px solid;
+    }
+
+    form:has(#accountType, #itemsToRemove) tr td:nth-of-type(5) {
+        margin-left: 50%;
+        border-left: 1px solid;
+    }
+
+    form:has(#accountType) td:nth-of-type(3)::before {
+        content: 'Type: ';
     }
 }

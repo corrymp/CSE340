@@ -1,47 +1,34 @@
 //#region depencencies
 const express = require('express');
 const router = new express.Router();
-const accountController = require('../controllers/accountController');
-const accValidate = require('../utilities/account-validation');
-const utilities = require('../utilities');
-const uhe = utilities.handleErrors;
+const mgmtRoute = require('./accountManagementRoute');
+const accCtrl = require('../controllers/accountController');
+const val = require('../utilities/account-validation');
+const util = require('../utilities');
+const uhe = util.handleErrors;
 //#endregion dependencies
 
-//#region not logged in
-//#region login
-// view
-router.get('/login', utilities.checkLoggedOut, uhe(accountController.buildLogin));
+// Method   Path                            Permissions             Validation Rules                                        Validation Check                         Destination Controller
+router.use( '/manage',                      util.checkAdmin,                                                                                                         mgmtRoute                         );
 
-// handler
-router.post('/login', utilities.checkLoggedOut, accValidate.loginRules(), uhe(accValidate.checkLoginData), uhe(accountController.accountLogin));
-//#endregion login
+//#region create                                                                                                                                                                                         
+router.get( '/register',                    util.checkLoggedOut,                                                                                                     uhe(accCtrl.registrationView     ));
+router.post('/register',                    util.checkLoggedOut,    (req,res,next)=>val.registrationRules(req,res,next),    uhe(val.validateRegistrationRequest),    uhe(accCtrl.registrationHandler  ));
+//#endregion create                                 
 
-//#region register
-// view
-router.get('/register', utilities.checkLoggedOut, uhe(accountController.buildRegister));
+//#region read                                                                                                                                                                                           
+router.get( '/login',                       util.checkLoggedOut,                                                                                                     uhe(accCtrl.loginView            ));
+router.post('/login',                       util.checkLoggedOut,    val.loginRules(),                                       uhe(val.validateLoginRequest),           uhe(accCtrl.loginHandler         ));
+router.get( '/logout', /*log-out handler*/  util.checkLogin,                                                                                                         uhe(accCtrl.logoutHandler        ));
+router.get( '/getAccounts/:account_type',   util.checkAdmin,                                                                                                         uhe(accCtrl.getAccountJSON       ));
+//#endregion read                               
 
-// handler
-router.post('/register', utilities.checkLoggedOut, accValidate.registrationRules(), uhe(accValidate.checkRegData), uhe(accountController.registerAccount));
-//#endregion register
-//#endregion not logged in
+//#region update                                                                                                                                                                                         
+router.get( '/update/:account_id',          util.checkLogin,                                                                                                         uhe(accCtrl.updateView           ));
+router.post('/update/user',                 util.checkLogin,        (req,res,next)=>val.updateAccountRules(req,res,next),   uhe(val.validateAccountUpdateRequest),   uhe(accCtrl.updateUserHandler    ));
+router.post('/update/password',             util.checkLogin,        (req,res,next)=>val.updatePasswordRules(req,res,next),  uhe(val.validatePasswordUpdateRequest),  uhe(accCtrl.updatePasswordHandler));
+//#endregion update                              
 
-//#region logged in
-//#region update
-// view
-router.get('/update/:account_id', utilities.checkLogin, uhe(accountController.buildAccountUpdate));
-
-// account handler
-router.post('/update/user', utilities.checkLogin, accValidate.updateAccountRules(), uhe(accValidate.checkAccountUpdate), uhe((req, res) => accountController.updateAccount(req, res, 'user')));
-
-// password handler
-router.post('/update/password', utilities.checkLogin, accValidate.updatePasswordRules(), uhe(accValidate.checkAccountUpdate), uhe((req, res) => accountController.updateAccount(req, res, 'password')));
-//#endregion update
-
-// log-out handler
-router.get('/logout', utilities.checkLogin, uhe(accountController.accountLogout));
-
-// management view
-router.get('/', utilities.checkLogin, uhe(accountController.buildManagement));
-//#endregion logged in
+router.get( '/', /* myAccount view */       util.checkLogin,                                                                                                         uhe(accCtrl.myAccountView        ));
 
 module.exports = router;

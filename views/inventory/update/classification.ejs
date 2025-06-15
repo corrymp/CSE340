@@ -1,0 +1,15 @@
+<%# html %><%# body %><%# div#wrapper%><%# main %>
+                <section id="add-classification" class="inv-add-page">
+                    <h1><%- title %></h1>
+                    <%- messages() %><% if (errors) { %><ul class="notice"><% errors.array().forEach(error => { %>
+                        <li><%= error.msg %></li><% }) %>
+                    </ul><% } %>
+                    <form action="/inv/edit/classification" method="post">
+                        <label for="classification_name">Classification name</label>
+                        <span>Must only use letters (a-zA-Z)</span>
+                        <input type="text" name="classification_name" id="classification_name" placeholder="classificationName" pattern="^[a-zA-z]*$" value="<%= locals.classification_name %>" required>
+                        <input type="hidden" name="classification_id"<%if(locals.classification_id){%> value="<%=locals.classification_id%>"<%}%>>
+
+                        <button type="submit">Edit Classification</button>
+                    </form>
+                </section>

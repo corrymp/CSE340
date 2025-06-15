@@ -1,0 +1,28 @@
+<%# html %><%# body %><%# div#wrapper%><%# main %>
+                <section id="delete-account" class="account-delete-page">
+                    <h1><%- title %></h1>
+                    <%- messages() %><% if (errors) { %>
+                    <ul class="notice"><% errors.array().forEach(error=> { %>
+                        <li><%= error.msg %></li><% }) %>
+                    </ul><% } %>
+
+                    <form action="/account/manage/delete/<%- account_id %>" method="post">
+                        <p>Deletion can <b>not</b> be undone. Confirm that this is the correct account to delete <em>before</em> proceeding.</p>
+                        
+                        <label for="account_lastname">First name</label>
+                        <input type="text" readonly value="<%= account_firstname %>">
+
+                        <label for="account_lastname">Last name</label>
+                        <input type="text" readonly value="<%= account_lastname %>">
+
+                        <label for="account_email">Email</label>
+                        <input type="text" readonly value="<%= account_email %>">
+
+                        <label for="account_type">Type</label>
+                        <input type="text" readonly value="<%= account_type %>">
+
+                        <input type="hidden" value="<%= account_id %>">
+
+                        <button type="submit">Permenantly <%- title %></button>
+                    </form>
+                </section>

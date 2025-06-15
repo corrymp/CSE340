@@ -228,6 +228,18 @@ section:where(#upgrades, #reviews) ul {
 }
 /* #endregion details */
 
+/* #region account */
+
+form:has(#accountType) {
+    max-width: unset;
+    width: unset;
+}
+
+form:has(#accountType) table :where(th, td) {
+    border-bottom: 1px solid var(--bright-yellow);
+}
+/* #endregion account */
+
 /* #region forms */
 form {
     width: 66%;

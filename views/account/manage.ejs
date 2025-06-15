@@ -1,0 +1,20 @@
+<%# html %><%# body %><%# div#wrapper%><%# main %>
+                <section id="management">
+                    <h1><%- title %></h1>
+                    <%- messages() %>
+                    <form>
+                        <section>
+                            <h2>Manage User Accounts</h2>
+
+                            <label for="accountType"><p>Choose an account type to see the members of:</p></label>
+                            
+                            <%- accountTypeSelect %>
+
+                            <table id="accountsDisplay"></table>
+
+                            <noscript>JavaScript must be enabled to use these features.</noscript>
+
+                            <script src="../../js/account-manage.js"></script>
+                        </section>
+                    </form>
+                </section>

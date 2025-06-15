@@ -1,63 +1,42 @@
 //#region dependencies
 const express = require('express');
 const router = new express.Router();
-const invController = require('../controllers/invController');
-const invValidate = require('../utilities/inv-validation');
-const utilities = require('../utilities');
-const uhe = utilities.handleErrors;
+const invCtrl = require('../controllers/invController');
+const validate = require('../utilities/inv-validation');
+const util = require('../utilities');
+const uhe = util.handleErrors;
 //#endregion dependencies
 
-//#region admin
-//#region add classification
-// view
-router.get('/add/classification', utilities.checkAdmin, uhe(invController.buildAddClassification));
+//  Method  Path                                         Permissions         Validation Rules                Validation Check                          Destination Controller
+router.get( '/ouch', /* throw error route */                                                                                                           uhe(invCtrl.ouch)                       );
 
-// handler
-router.post('/add/classification', utilities.checkAdmin, invValidate.classificationRules(), uhe(invValidate.checkAddClassificationData), uhe(invController.addClassification));
-//#endregion add classification
+//#region create                                                                                                                                                                               
+router.get( '/add/classification',                       util.checkAdmin,                                                                              uhe(invCtrl.addClassificationView)      );
+router.post('/add/classification',                       util.checkAdmin,    validate.classificationRules(), uhe(validate.checkAddClassificationData), uhe(invCtrl.addClassificationHandler)   );
+router.post('/add/inventory',                            util.checkAdmin,    validate.invRules(),            uhe(validate.checkAddInvData),            uhe(invCtrl.addInventoryHandler)        );
+router.get( '/add/inventory',                            util.checkAdmin,                                                                              uhe(invCtrl.addInventoryView)           );
+//#endregion create                                                                                                                                                                            
 
-//#region add inventory
-// view
-router.get('/add/inventory', utilities.checkAdmin, uhe(invController.buildAddInventory));
+//#region read                                                                                                                                                                                 
+router.get('/getInventory/:classification_id',           util.checkEmployee,                                                                           uhe(invCtrl.getInventoryJSON)           );
+router.get('/type/:classificationId',                                                                                                                  uhe(invCtrl.classificationView)         );
+router.get('/detail/:vehicleId',                                                                                                                       uhe(invCtrl.vehicleView)                );
+//#endregion read                                                                                                                                                                              
 
-// handler
-router.post('/add/inventory', utilities.checkAdmin, invValidate.invRules(), uhe(invValidate.checkAddInvData), uhe(invController.addInventory));
-//#endregion add inventory
-//#endregion admin
+//#region update                                                                                                                                                                               
+router.get( '/edit/classification/:classification_id',   util.checkEmployee,                                                                           uhe(invCtrl.editClassificationView)     );
+router.post('/update/classification/:classification_id', util.checkEmployee, validate.classificationRules(), uhe(validate.checkAddClassificationData), uhe(invCtrl.editClassificationHandler)  );
+router.get( '/edit/inventory/:inv_id',                   util.checkEmployee,                                                                           uhe(invCtrl.editInventoryView)          );
+router.post('/update/inventory/:inv_id',                 util.checkEmployee, validate.invRules(),            uhe(validate.checkAddInvData),            uhe(invCtrl.editInventoryHandler)       );
+//#endregion update                                                                                                                                                                            
 
-//#region employee
-//#region update inventory
-// view
-router.get('/edit/:inv_id', utilities.checkEmployee, uhe(invController.editInvItemView));
+//#region delete                                                                                                                                                                               
+router.get( '/delete/classification/:classification_id', util.checkAdmin,                                                                              uhe(invCtrl.deleteClassificationView)   );
+router.post('/delete/classification/:classification_id', util.checkAdmin,                                                                              uhe(invCtrl.deleteClassificationHandler));
+router.get( '/delete/inventory/:inv_id',                 util.checkEmployee,                                                                           uhe(invCtrl.deleteInventoryView)        );
+router.post('/delete/inventory/:inv_id',                 util.checkEmployee,                                                                           uhe(invCtrl.deleteInventoryHandler)     );
+//#endregion delete                                                                                                                                                                            
 
-// handler
-router.post('/update', utilities.checkEmployee, invValidate.invRules(), uhe(invValidate.checkAddInvData), uhe(invController.updateInventory))
-//#endregion update inventory
-
-//#region delete inventory
-// view
-router.get('/delete/:inv_id', utilities.checkEmployee, uhe(invController.delItemView));
-
-// handler
-router.post('/delete', utilities.checkEmployee, uhe(invController.deleteInventoryItem));
-//#endregion delete inventory
-
-// get inventory JSON route
-router.get('/getInventory/:classification_id', utilities.checkEmployee, uhe(invController.getInventoryJSON));
-//#endregion employee
-
-//#region global
-// classification view
-router.get('/type/:classificationId', uhe(invController.buildByClassificationId));
-
-// inventory view
-router.get('/detail/:vehicleId', uhe(invController.buildByVehicleId));
-
-// throw error route
-router.get('/ouch', uhe(invController.ouch));
-//#endregion global
-
-// management view | employee only
-router.get('/', utilities.checkEmployee, uhe(invController.buildManagement));
+router.get( '/', /* management view | employee only */   util.checkEmployee,                                                                           uhe(invCtrl.managementView)             );
 
 module.exports = router;

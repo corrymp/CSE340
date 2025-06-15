@@ -1,17 +1,35 @@
+//#region dependencies
 const utilities = require('.');
 const invModel = require('../models/inventory-model');
 const { body, validationResult } = require('express-validator');
+//#endregion dependencies
 
 const validate = {};
 
+/**
+ * @param {String} value - value being checked to display fail message for
+ * @param {String} msg - message content to include
+ * @returns {String} build validation fail message
+ */
 const msg = (value, msg) => `${value.split('_')[1]} ${msg}.`;
 
+//#region individual rules
+
+/**
+ * @param {String|Number} value - form input to sanitize and validate
+ * @returns validation results
+ */
 const sanitize = value => body(value)
     .trim()
     .escape()
     .notEmpty()
     .withMessage(msg(value, 'left empty'));
 
+/**
+ * @param {String} value - form image input to sanitize and validate
+ * @returns validation results
+ * @description verifies that starting at the start of the string a "/" is found with any characters following, and that the string ends with a valid ".(extension)"
+ */
 const imagePath = value => body(value)
     .trim()
     .notEmpty()
@@ -19,6 +37,11 @@ const imagePath = value => body(value)
     .matches(/^(?=(?:.*\/)).*\.(?:apng|avif|gif|jpg|jpeg|jfif|pjpeg|pjp|png|svg|webp|bmp|ico|cur|tif|tiff)$/i)
     .withMessage(msg(value, 'should include a path and file extension'));
 
+/**
+ * @param {Number} value - form input to sanitize and validate
+ * @returns validation results
+ * @description verifies that the input is a number and greater than or equal to 0
+ */
 const numMin0 = value => sanitize(value)
     .isFloat({ min: 0 })
     .withMessage(msg(value, 'should only be numbers'));
@@ -40,8 +63,12 @@ const classificationExists = (value, shouldExist) => body(value)
         if (!shouldExist && classificationExists.rows.length !== 0) throw new Error('Classification already exists.');
     });
 
+//#endregion individual rules
+
+//#region rule collections
+
 /**
- * @returns {Object[]} sanitization and validation rules to be use
+ * @returns {Object[]} sanitization and validation rules to be use with classification requests
  * @description rule to clean user provided classification name
  */
 validate.classificationRules = () => [
@@ -53,7 +80,7 @@ validate.classificationRules = () => [
 ];
 
 /**
- * @returns {Object[]} sanitization and validation rules to be use
+ * @returns {Object[]} sanitization and validation rules to be use with inventory requests
  * @description rules to clean user provided inventory item creation details
  */
 validate.invRules = () => [
@@ -76,16 +103,20 @@ validate.invRules = () => [
         .withMessage('color should only be letters.')
 ];
 
+//#endregion rule collections
+
+//#region validators
+
 /**
  * @param {Request} req - Express request object
  * @param {Response} res - Express response object
  * @param {NextFunction} next - Express next callback
- * @description validate classification creation details fit required parameters
+ * @description validate that classification creation details fit required parameters
  */
 validate.checkAddClassificationData = async (req, res, next) => {
     const { classification_name } = req.body;
     let errors = validationResult(req);
-    if (!errors.isEmpty()) return res.render('inventory/add/classification', { errors, title: 'Add Classification', nav: await utilities.getNav(), classification_name, lastModified: utilities.lastModified });
+    if (!errors.isEmpty()) return res.status(400).render('inventory/add/classification', { errors, title: 'Add Classification', nav: await utilities.getNav(), classification_name, lastModified: utilities.lastModified });
     next();
 };
 
@@ -93,13 +124,15 @@ validate.checkAddClassificationData = async (req, res, next) => {
  * @param {Request} req - Express request object
  * @param {Response} res - Express response object
  * @param {NextFunction} next - Express next callback
- * @description validate inventory item creation details fit required parameters
+ * @description validate that inventory item creation details fit required parameters
  */
 validate.checkAddInvData = async (req, res, next) => {
     const { classification_id, inv_make, inv_model, inv_image, inv_thumbnail, inv_price, inv_year, inv_miles, inv_color, inv_description } = req.body;
     let errors = validationResult(req);
-    if (!errors.isEmpty()) return res.render('inventory/add/inventory', { errors, title: 'Add Vehicle', nav: await utilities.getNav(), classificationSelect: await utilities.buildClassificationList(classification_id), inv_make, inv_model, inv_image, inv_thumbnail, inv_price, inv_year, inv_miles, inv_color, inv_description, lastModified: utilities.lastModified });
+    if (!errors.isEmpty()) return res.status(400).render('inventory/add/inventory', { errors, title: 'Add Vehicle', nav: await utilities.getNav(), classificationSelect: await utilities.buildClassificationList(classification_id), inv_make, inv_model, inv_image, inv_thumbnail, inv_price, inv_year, inv_miles, inv_color, inv_description, lastModified: utilities.lastModified });
     next();
 };
+
+//#endregion validators
 
 module.exports = validate;

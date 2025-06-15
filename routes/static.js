@@ -1,5 +1,7 @@
+//#region dependencies
 const express = require('express');
 const router = express.Router();
+//#endregion dependencies
 
 // Static Routes
 // Set up "public" folder / subfolders for static files
